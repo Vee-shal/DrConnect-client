@@ -2,30 +2,31 @@
 
 :root {
   /* Primary Colors */
-  --primary: #2E86C1;     /* Calm Medical Blue */
-  --secondary: #117864;   /* Trustworthy Teal */
+  --primary: #0f172a;          /* Dark slate for headers/navs (matches hero bg) */
+  --secondary: #14b8a6;        /* Teal accent (for icons, headings) */
 
   /* Accent Colors */
-  --color-accent: #28B463;      /* Soothing Green */
-  --color-warning: #F39C12;     /* Warm Caution Orange */
-  --color-error: #E74C3C;       /* Alert Red */
-  --color-success: #2ECC71;     /* Success Green */
+  --color-accent: #004218;     /* Bright green accent (buttons, links) */
+  --color-warning: #facc15;    /* Yellow warning */
+  --color-error: #ef4444;      /* Red error */
+  --color-success: #10b981;    /* Emerald success */
 
   /* Backgrounds */
-  --color-bg: #F8F9F9;          /* Light Gray Background */
-  --color-bg-alt: #EAEDED;      /* Slightly Darker Background */
+  --color-bg: #0d0d0d;         /* Full-page dark background */
+  --color-bg-alt: #111111;     /* Slight contrast for cards/sections */
 
   /* Text */
-  --color-text: #1C2833;        /* Deep Charcoal Text */
-  --color-text-light: #566573;  /* Soft Gray Text */
+  --color-text: #f1f5f9;       /* Main white-ish text */
+  --color-text-light: #94a3b8; /* Secondary light gray text */
 
   /* Borders & Lines */
-  --color-border: #D5DBDB;      /* Subtle Gray Border */
+  --color-border: #1f2937;     /* Subtle border for dark cards */
 
   /* Buttons */
-  --color-button-primary: #3498DB;
-  --color-button-hover: #2E86C1;
+  --color-button-primary: #22c55e;   /* Green CTA */
+  --color-button-hover: #053f1c;     /* Slightly darker on hover */
 }
+
 .container {
-  @apply max-w-[1520px] mx-auto
+  @apply max-w-[1520px] mx-auto;
 }
