@@ -1,11 +1,16 @@
-import React from 'react'
-import Header from './components/Header/Header'
-import HowItWorksCard from './components/Home/HowItWorksCard'
+import React from "react";
+import Hospital from "./(pages)/Hospitals/page";
+import Doctors from "./(pages)/Doctors/page";
+import AboutUs from "./(pages)/About/page";
+import TermsAndConditions from "./(pages)/TermsCondition.tsx/page";
+
 
 const page = () => {
-  return (
-    <div className='p-10 bg-[var(--color-bg-alt)]   '><HowItWorksCard icon='' heading='Create Your Profile' description='Sign up and complete your profile to get personalized healthcare recommendations and services.'/></div>
-  )
-}
+  return <div>
+    {/* <Doctors/> */}
+    {/* <AboutUs/> */}
+    <TermsAndConditions/>
+  </div>;
+};
 
-export default page
+export default page;
