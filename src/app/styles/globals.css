@@ -17,16 +17,16 @@
 
   /* Text */
   --color-text: #f1f5f9;       /* Main white-ish text */
-  --color-text-light: #94a3b8; /* Secondary light gray text */
+  --color-text-light: ##1C1C1C; /* Secondary light gray text */
 
   /* Borders & Lines */
   --color-border: #1f2937;     /* Subtle border for dark cards */
 
   /* Buttons */
-  --color-button-primary: #22c55e;   /* Green CTA */
-  --color-button-hover: #053f1c;     /* Slightly darker on hover */
+  --color-button-primary: #019468;   /* Green CTA */
+  --color-button-hover: #007A55;     /* Slightly darker on hover */
 }
 
 .container {
-  @apply max-w-[1520px] mx-auto;
+  @apply max-w-[1540px] mx-auto;
 }

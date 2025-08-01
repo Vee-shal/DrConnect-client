@@ -1,52 +1,74 @@
-export const navLinks: NavLink[] = [
+export const navLinks = [
   { name: "Home", href: "/" },
-  { name: "Find Doctors", href: "/doctors" },
-  { name: "Find Hospitals", href: "/hospitals" },
-  { name: "About", href: "/about" },
-  { name: "Contact Us", href: "/contact" },
+  { name: "Find Doctors", href: "/Doctors" },
+  { name: "Find Hospitals", href: "/Hospitals" },
+  { name: "About", href: "/About" },
+  { name: "Contact Us", href: "/Contact" },
 ];
 
 export const HowItWorksSectionData = [
   {
     heading: "Create Your Profile",
-    icon: "/icons/profile.png",
-    description: "Sign up and complete your profile to get personalized healthcare recommendations and services.",
+    icon: "https://img.icons8.com/?size=100&id=Pn6usOP1InB5&format=png&color=000000",
+    description:
+      "Sign up and complete your profile to get personalized healthcare recommendations and services.",
   },
   {
     heading: "Book Appointments",
-    icon: "/icons/calendar.png",
-    description: "Browse doctor profiles, check availability, and book appointments that fit your schedule.",
+    icon: "https://img.icons8.com/?size=100&id=Pn6usOP1InB5&format=png&color=000000",
+    description:
+      "Browse doctor profiles, check availability, and book appointments that fit your schedule.",
   },
   {
     heading: "Video Consultation",
-    icon: "/icons/video.png",
-    description: "Consult doctors through secure, high-quality video from the comfort of your home.",
+    icon: "https://img.icons8.com/?size=100&id=Pn6usOP1InB5&format=png&color=000000",
+    description:
+      "Consult doctors through secure, high-quality video from the comfort of your home.",
   },
   {
     heading: "Consultation Credits",
-    icon: "/icons/credits.png",
-    description: "Purchase credit packages that fit your needs and use them across various services.",
+    icon: "https://img.icons8.com/?size=100&id=Pn6usOP1InB5&format=png&color=000000",
+    description:
+      "Purchase credit packages that fit your needs and use them across various services.",
   },
   {
     heading: "Verified Doctors",
-    icon: "/icons/verified.png",
-    description: "All doctors are carefully vetted to ensure quality care and trustworthiness.",
+    icon: "https://img.icons8.com/?size=100&id=Pn6usOP1InB5&format=png&color=000000",
+    description:
+      "All doctors are carefully vetted to ensure quality care and trustworthiness.",
   },
   {
     heading: "Medical Documentation",
-    icon: "/icons/docs.png",
-    description: "Access prescriptions, appointment history, and important documents all in one place.",
+    icon: "https://img.icons8.com/?size=100&id=Pn6usOP1InB5&format=png&color=000000",
+    description:
+      "Access prescriptions, appointment history, and important documents all in one place.",
   },
 ];
 
+export const testimonialData = [
+  {
+    role: "Software Engineer at Google",
+    desc: "This platform exceeded my expectations. The attention to detail and user experience is world-class.",
+    name: "Aarav Mehta",
+  },
+  {
+    role: "Founder, Healthify App",
+    desc: "We’ve seen a 3x increase in user engagement since using their services. Highly recommended!",
+    name: "Dr. Sneha Kapoor",
+  },
+  {
+    role: "UX Designer at Swiggy",
+    desc: "Clean UI, smooth flow, and scalable components. Everything a developer dreams of.",
+    name: "Rajat Sharma",
+  },
+  {
+    role: "AI Researcher at IISc Bangalore",
+    desc: "The integration of modern tech with a human-centric approach is exactly what the industry needs.",
+    name: "Dr. Fatima Ansari",
+  },
+];
 
-
-
-
-
-
-
-//Footer links 
+//Footer links
 export const quickLinks = [
   { name: "Find a Doctor", href: "/doctors" },
   { name: "Book Appointment", href: "/appointment" },
@@ -91,13 +113,9 @@ export const contactInfo = [
   { type: "address", value: "123 Udaipur, Rajasthan, India" },
 ];
 
-
 // dummy docotr data
 
-
 export const doctorData = [
-
-
   {
     id: "dr-john",
     name: "Dr. John Doe",
@@ -105,8 +123,7 @@ export const doctorData = [
     description:
       "Experienced cardiologist with 10+ years in treating heart conditions. Compassionate and highly rated.",
     rating: 4.8,
-    imageUrl:
-      "",
+    imageUrl: "",
   },
   {
     id: "dr-jane",
@@ -115,8 +132,7 @@ export const doctorData = [
     description:
       "Expert in skin treatments with 7+ years of experience. Friendly and detail-oriented.",
     rating: 4.7,
-    imageUrl:
-      "",
+    imageUrl: "",
   },
   {
     id: "dr-rajesh",
@@ -125,8 +141,7 @@ export const doctorData = [
     description:
       "Highly skilled neurologist with a focus on brain and spine disorders. Known for accurate diagnosis.",
     rating: 4.9,
-    imageUrl:
-      "",
+    imageUrl: "",
   },
 
   {
@@ -136,8 +151,7 @@ export const doctorData = [
     description:
       "Experienced cardiologist with 10+ years in treating heart conditions. Compassionate and highly rated.",
     rating: 4.8,
-    imageUrl:
-      "",
+    imageUrl: "",
   },
   {
     id: "dr-jane-smith",
@@ -146,8 +160,7 @@ export const doctorData = [
     description:
       "Expert in skin treatments with 7+ years of experience. Friendly and detail-oriented.",
     rating: 4.7,
-    imageUrl:
-      "",
+    imageUrl: "",
   },
   {
     id: "dr-rajesh-kumar",
@@ -156,12 +169,9 @@ export const doctorData = [
     description:
       "Highly skilled neurologist with a focus on brain and spine disorders. Known for accurate diagnosis.",
     rating: 4.9,
-    imageUrl:
-      "",
+    imageUrl: "",
   },
-
-
-]
+];
 
 export const hospitalData = [
   {
@@ -169,35 +179,34 @@ export const hospitalData = [
     name: "Geetanjali Medical Center",
     address: "Hiran Magri, Sector 11, Udaipur, Rajasthan",
     rating: 4.5,
-    imageUrl: ""
+    imageUrl: "",
   },
   {
     id: 2,
     name: "Sapphire Heart Institute",
     address: "MG Road, Bangalore, Karnataka",
     rating: 4.2,
-    imageUrl: ""
+    imageUrl: "",
   },
   {
     id: 3,
     name: "Lotus Women's Hospital",
     address: "Connaught Place, New Delhi",
     rating: 4.7,
-    imageUrl: ""
+    imageUrl: "",
   },
   {
     id: 4,
     name: "Sunrise Multispeciality",
     address: "Banjara Hills, Hyderabad",
     rating: 4.3,
-    imageUrl: ""
+    imageUrl: "",
   },
   {
     id: 5,
     name: "Fortcare Children Hospital",
     address: "JLN Marg, Jaipur, Rajasthan",
     rating: 4.6,
-    imageUrl: ""
-  }
+    imageUrl: "",
+  },
 ];
-

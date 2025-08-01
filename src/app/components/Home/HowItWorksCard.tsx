@@ -1,9 +1,10 @@
+"use client"
 import Image from 'next/image';
 import React from 'react';
 
 const HowItWorksCard = ({ icon, heading, description }: HowItWorksCardProp) => {
     return (
-        <div className="w-max bg-[var(--color-bg-alt)] border border-[var(--color-border)] text-[var(--color-text)] p-5 space-y-4 rounded-2xl shadow-md transition-all hover:border-[var(--color-button-hover)] hover:shadow-xl">
+        <div className="text-start w-max bg-[#171717] border border-[var(--color-border)] text-[var(--color-text)] p-5 space-y-4 rounded-2xl shadow-md transition-all hover:border-[var(--color-button-hover)] hover:shadow-xl">
             <Image
                 src={icon || "https://img.icons8.com/?size=100&id=Pn6usOP1InB5&format=png&color=000000"}
                 alt=""

@@ -1,15 +1,40 @@
-import Image from 'next/image'
-import React from 'react'
+import Image from 'next/image';
+import React from 'react';
+import clsx from 'clsx';
 
-const CustomButton = ({ text, icon, onClick }: CustomButtonProp) => {
+type CustomButtonProp = {
+  icon?: string;
+  onClick?: () => void;
+  text: string;
+  variant: 'outlined' | 'contained';
+};
+
+const CustomButton = ({ icon, onClick, text, variant }: CustomButtonProp) => {
   return (
-    <div onClick={onClick} className='flex bg-amber-400 px-2 py-1 rounded-lg gap-2 justify-center items-center shadow-amber-400'>
-      <Image src={icon || "https://img.icons8.com/?size=100&id=Pn6usOP1InB5&format=png&color=000000"} height={1000} width={1000} alt='' className='h-7 w-7' />
-      <div>
-        {text}
-      </div>
-    </div>
-  )
-}
+    <button
+      onClick={onClick}
+      className={clsx(
+        'text-sm flex items-center gap-2 px-5 py-2  justify-center  rounded-xl font-semibold transition duration-300 w-[100px] sm:w-fit',
+        {
+          'bg-[#06A06F] text-white border border-transparent hover:bg-[#04825D]':
+            variant === 'contained',
+          'bg-transparent text-white border justify-center items-center  border-[#3B3B3B] hover:bg-[#262626] hover:border-[#04825D]':
+            variant === 'outlined',
+        }
+      )}
+    >
+      {icon && (
+        <Image
+          src={icon}
+          alt="icon"
+          height={20}
+          width={20}
+          className="w-5 h-5"
+        />
+      )}
+      <span>{text}</span>
+    </button>
+  );
+};
 
-export default CustomButton
+export default CustomButton;
