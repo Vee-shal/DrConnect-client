@@ -14,11 +14,11 @@ const CustomButton = ({ icon, onClick, text, variant }: CustomButtonProp) => {
     <button
       onClick={onClick}
       className={clsx(
-        'text-sm flex items-center gap-2 px-5 py-2  justify-center  rounded-xl font-semibold transition duration-300 w-[100px] sm:w-fit',
+        'text-sm flex items-center gap-2 px-4 py-2 justify-center rounded-xl font-semibold transition duration-300 w-full sm:w-fit flex-wrap text-center',
         {
           'bg-[#06A06F] text-white border border-transparent hover:bg-[#04825D]':
             variant === 'contained',
-          'bg-transparent text-white border justify-center items-center  border-[#3B3B3B] hover:bg-[#262626] hover:border-[#04825D]':
+          'bg-transparent text-white border border-[#3B3B3B] hover:bg-[#262626] hover:border-[#04825D]':
             variant === 'outlined',
         }
       )}
@@ -32,7 +32,7 @@ const CustomButton = ({ icon, onClick, text, variant }: CustomButtonProp) => {
           className="w-5 h-5"
         />
       )}
-      <span>{text}</span>
+      <span className="text-sm sm:text-base">{text}</span>
     </button>
   );
 };

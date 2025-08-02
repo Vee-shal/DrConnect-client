@@ -212,3 +212,33 @@ export const hospitalData = [
     imageUrl: "",
   },
 ];
+
+export const teamMembers = [
+  {
+    name: 'Vishal',
+    role: 'Frontend Developer',
+    desc: 'Built the complete UI of the project using React, Tailwind CSS and integrated APIs using Axios. Always eager to learn and take ownership of the development process.',
+  },
+  {
+    name: 'Shoaib',
+    role: 'Backend Developer',
+    desc: 'Focused on server-side development, API structure, and database handling. Ensures performance and security behind the scenes.',
+  },
+];
+ export const specialties = [
+    "Cardiology",
+    "Dermatology",
+    "Neurology",
+    "Pediatrics",
+    "Orthopedics",
+    "Ophthalmology",
+    "Gynecology",
+    "Psychiatry",
+  ];
+
+  export const hospitals = [
+    "City General Hospital",
+    "Metropolitan Medical Center",
+    "University Health System",
+    "Children's Specialty Clinic",
+  ];
