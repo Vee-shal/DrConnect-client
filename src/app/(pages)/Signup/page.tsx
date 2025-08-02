@@ -14,14 +14,31 @@ import {
   FaUser,
 } from "react-icons/fa";
 import { MdWork, MdHealthAndSafety } from "react-icons/md";
+import { endpoints } from "@/app/lib/endpoints";
+import { _makePostRequest } from "@/app/utils/api/apiClients";
+import { toast } from "react-hot-toast";
 
+// Example:
+toast.success("Registration Successful!");
+toast.error("Registration Failed!");
+
+type FormDataType = {
+  fullName: string;
+  phone_number: string;
+  email: string;
+  specialization: string;
+  experience: string | number;
+  license: string;
+  password: string;
+  certificate: string | null;
+};
 const SignUpForm = () => {
-  const [role, setRole] = useState<"doctor" | "patient">("doctor");
+  const [role, setRole] = useState<"doctor" | "user">("doctor");
   const [showPassword, setShowPassword] = useState(false);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormDataType>({
     fullName: "",
-    mobile: "",
+    phone_number: "",
     email: "",
     specialization: "",
     experience: "",
@@ -38,9 +55,55 @@ const SignUpForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(role, formData);
+
+    try {
+      // Prepare payload based on role
+      const payload =
+        role === "doctor"
+          ? {
+              name: formData.fullName,
+              email: formData.email,
+              phone_number: String(formData.phone_number),
+              specialization: formData.specialization,
+              experience: Number(formData.experience),
+              license: formData.license,
+              certificate: String(formData.certificate),
+              role: "doctor",
+              password: formData.password,
+            }
+          : {
+              name: formData.fullName,
+              email: formData.email,
+              phone_number: String(formData.phone_number),
+              password: formData.password,
+              role: "user",
+            };
+
+      // API Call
+      const res = await _makePostRequest<{ message: string }, typeof payload>(
+        endpoints.AUTH.REGISTER,
+        payload
+      );
+
+      console.log("✅ Registration Successful:", res.message);
+
+      toast.success(res.message || "Registration successful!");
+      // ✅ Reset form
+      setFormData({
+        fullName: "",
+        email: "",
+        phone_number: "",
+        specialization: "",
+        experience: "",
+        license: "",
+        certificate: null,
+        password: "",
+      });
+    } catch (err: unknown) {
+      console.error("❌ Registration Failed:", err);
+    }
   };
 
   return (
@@ -72,11 +135,11 @@ const SignUpForm = () => {
           </button>
           <button
             className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
-              role === "patient"
+              role === "user"
                 ? "bg-[#00c37a] text-black"
                 : "bg-gray-800 text-white border border-[#00c37a]/30"
             }`}
-            onClick={() => setRole("patient")}
+            onClick={() => setRole("user")}
           >
             As Patient
           </button>
@@ -95,7 +158,7 @@ const SignUpForm = () => {
                 </p>
               </div>
 
-              {/* Hidden on mobile, visible on sm and up */}
+              {/* Hidden on phone_number, visible on sm and up */}
               <div className="h-80 relative hidden sm:block border border-[#00c37a]/20 rounded-xl overflow-hidden">
                 <Image
                   src={
@@ -131,7 +194,7 @@ const SignUpForm = () => {
                   </div>
                 </div>
 
-                {/* Mobile Number */}
+                {/* phone_number Number */}
                 <div>
                   <label className="block mb-1 text-gray-300">
                     Mobile Number
@@ -139,9 +202,9 @@ const SignUpForm = () => {
                   <div className="flex items-center bg-[#1a1a1a] border border-[#08392e] rounded-md px-2 py-1.5">
                     <FaPhone className="text-gray-500 mr-2 text-sm" />
                     <input
-                      type="tel"
-                      name="mobile"
-                      value={formData.mobile}
+                      type="text"
+                      name="phone_number"
+                      value={formData.phone_number}
                       onChange={handleChange}
                       placeholder="+91 98765 43210"
                       required

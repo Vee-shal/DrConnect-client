@@ -29,7 +29,7 @@ const Header = () => {
         
         {/* Logo */}
         <div
-          className="text-2xl font-bold tracking-wide text-white cursor-pointer"
+          className="text-2xl  font-bold tracking-wide text-white cursor-pointer"
           onClick={() => router.push('/')}
         >
           DrConnect
