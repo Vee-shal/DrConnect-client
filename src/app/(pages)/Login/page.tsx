@@ -21,7 +21,7 @@ const LoginPage = () => {
     e.preventDefault();
     // Perform login logic here
     console.log(formData);
-    // router.push('/dashboard');
+  
   };
 
   return (
