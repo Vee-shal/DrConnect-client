@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaUserMd } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
+import { _makeGetRequest, _makePostRequest } from '@/app/lib/api/api';
+import { endpoints } from '@/app/lib/api/endpoints';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,12 +19,27 @@ const LoginPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Perform login logic here
-    console.log(formData);
-  
-  };
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  console.log(formData);
+
+  try {
+    const res = await _makePostRequest(endpoints.AUTH.LOGIN, {
+      email: formData.email,
+      password: formData.password,
+    });
+
+    console.log(res)
+    if (res.token) {
+      router.push("/dashboard");
+    } else {
+      console.log("Login failed:", res.response?.data || res);
+    }
+  } catch (error) {
+    console.error("Error during login:", error);
+  }
+};
+
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-[#111111]  px-4 py-10">

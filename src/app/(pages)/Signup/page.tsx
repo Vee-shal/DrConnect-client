@@ -14,8 +14,8 @@ import {
   FaUser,
 } from "react-icons/fa";
 import { MdWork, MdHealthAndSafety } from "react-icons/md";
-import { endpoints } from "@/app/lib/endpoints";
-import { _makePostRequest } from "@/app/utils/api/apiClients";
+import { endpoints } from "@/app/lib/api/endpoints";
+import { _makePostRequest } from "@/app/lib/api/apiClients";
 import { toast } from "react-hot-toast";
 
 // Example:
