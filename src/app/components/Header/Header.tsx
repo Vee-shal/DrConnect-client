@@ -53,9 +53,13 @@ const Header = () => {
     router.push('/Login');
   };
 
+  const goToProfile = () => {
+    router.push('/profile');
+  };
+
   return (
     <header className="sticky container top-0 z-50 bg-gradient-to-b from-[#08231B]/90 to-[#081511]/90 backdrop-blur-md border-b border-[#00C896]">
-      <div className=" mx-auto px-4 py-3 flex justify-between items-center">
+      <div className="mx-auto px-4 py-3 flex justify-between items-center">
 
         {/* Logo */}
         <div
@@ -78,11 +82,24 @@ const Header = () => {
           ))}
         </nav>
 
-        {/* Auth Section */}
+        {/* Auth Section for Desktop */}
         <div className="hidden md:flex items-center space-x-4">
           {user ? (
             <>
-              <span className="text-white text-sm">Welcome, {user.name}</span>
+              <button
+                onClick={goToProfile}
+                className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A8.962 8.962 0 0112 15c2.21 0 4.21.804 5.879 2.121M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
               <CustomButton
                 text="Logout"
                 variant="outlined"
@@ -98,10 +115,28 @@ const Header = () => {
           )}
         </div>
 
-        {/* Mobile Toggle Button */}
-        <button className="md:hidden text-white z-50" onClick={toggleMobileMenu}>
-          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        {/* Mobile Section: Profile Icon + Hamburger */}
+        <div className="md:hidden flex items-center gap-3 z-50">
+          {user && (
+            <button
+              onClick={goToProfile}
+              className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A8.962 8.962 0 0112 15c2.21 0 4.21.804 5.879 2.121M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </button>
+          )}
+          <button className="text-white" onClick={toggleMobileMenu}>
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}

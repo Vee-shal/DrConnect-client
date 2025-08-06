@@ -4,9 +4,10 @@ export const navLinks = [
   { name: "Find Hospitals", href: "/Hospitals" },
   { name: "About", href: "/About" },
   { name: "Contact Us", href: "/Contact" },
-  { name: "Terms and Conditions", href: "/TermsCondition" }
+  { name: "Terms and Conditions", href: "/TermsCondition" },
 
 ];
+
 
 export const HowItWorksSectionData = [
   {
