@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
 import Image from "next/image";
 import {
-  FaUserMd,
   FaPhone,
   FaEnvelope,
   FaAward,
@@ -14,102 +13,84 @@ import {
   FaUser,
 } from "react-icons/fa";
 import { MdWork, MdHealthAndSafety } from "react-icons/md";
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { doctorSchema, patientSchema, } from "@/app/lib/validations/SignupSchema";
+import { _makePostRequest } from "@/app/lib/api/api";
 import { endpoints } from "@/app/lib/api/endpoints";
-import { _makePostRequest } from "@/app/lib/api/apiClients";
-import { toast } from "react-hot-toast";
-
-// Example:
-toast.success("Registration Successful!");
-toast.error("Registration Failed!");
-
-type FormDataType = {
-  fullName: string;
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+type Role = "doctor" | "user";
+type SignupFormInputs = {
+  name: string;
   phone_number: string;
   email: string;
-  specialization: string;
-  experience: string | number;
-  license: string;
   password: string;
-  certificate: string | null;
-};
+  role: "doctor" | "user";
+  specialization?: string;
+  experience?: number;
+  license?: string;
+}
 const SignUpForm = () => {
-  const [role, setRole] = useState<"doctor" | "user">("doctor");
-  const [showPassword, setShowPassword] = useState(false);
-
-  const [formData, setFormData] = useState<FormDataType>({
-    fullName: "",
-    phone_number: "",
-    email: "",
-    specialization: "",
-    experience: "",
-    license: "",
-    password: "",
-    certificate: null,
-  });
-
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: files ? files[0] : value,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    try {
-      // Prepare payload based on role
-      const payload =
-        role === "doctor"
-          ? {
-              name: formData.fullName,
-              email: formData.email,
-              phone_number: String(formData.phone_number),
-              specialization: formData.specialization,
-              experience: Number(formData.experience),
-              license: formData.license,
-              certificate: String(formData.certificate),
-              role: "doctor",
-              password: formData.password,
-            }
-          : {
-              name: formData.fullName,
-              email: formData.email,
-              phone_number: String(formData.phone_number),
-              password: formData.password,
-              role: "user",
-            };
-
-      // API Call
-      const res = await _makePostRequest<{ message: string }, typeof payload>(
-        endpoints.AUTH.REGISTER,
-        payload
-      );
-
-      console.log("✅ Registration Successful:", res.message);
-
-      toast.success(res.message || "Registration successful!");
-      // ✅ Reset form
-      setFormData({
-        fullName: "",
-        email: "",
-        phone_number: "",
-        specialization: "",
-        experience: "",
-        license: "",
-        certificate: null,
-        password: "",
-      });
-    } catch (err: unknown) {
-      console.error("❌ Registration Failed:", err);
+  const [role, setRole] = useState<Role>("doctor");
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<SignupFormInputs>({
+    resolver: yupResolver(role === "doctor" ? doctorSchema : patientSchema),
+    defaultValues: {
+      role: role
     }
-  };
+  })
+
+
+  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+  const onSubmit = async (data: SignupFormInputs) => {
+
+    const { name, phone_number, email, password, role, specialization, experience, license, } = data;
+
+
+    const payload = role === "doctor" ? {
+      name,
+      phone_number,
+      email,
+      password,
+      role,
+      specialization,
+      experience,
+      license,
+
+    } : {
+      name,
+      phone_number,
+      email,
+      password,
+      role,
+
+    };
+    try {
+      const res = await _makePostRequest(endpoints.AUTH.REGISTER, {
+        ...payload , verified : false
+      });
+      console.log("res===>", res)
+      if (res?.token && res?.user) {
+        localStorage.setItem("token", res.token)
+        localStorage.setItem("user", JSON.stringify(res.user))
+        toast.success("Registration successful!");
+        router.push("/profile");
+      }
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+    }
+  }
 
   return (
-    <section className="bg-[#0a0a0a] text-white py-10 px-4 sm:px-6 lg:px-8">
+    <section className="bg-[#0a0a0a] text-white py-10 px-4 sm:px-6 lg:px-8 container">
       <div className="max-w-5xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold sm:text-4xl">
             {role === "doctor" ? "Join as a Doctor" : "Join as a Patient"}
@@ -121,34 +102,40 @@ const SignUpForm = () => {
           </p>
         </div>
 
-        {/* Role Toggle */}
-        <div className="flex justify-center mb-6 gap-4">
-          <button
-            className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
-              role === "doctor"
+        <div className="flex flex-col sm:flex-row items-center justify-center mb-6 gap-4 text-sm">
+          <p className="text-white font-medium text-center">Sign in as:</p>
+          <div className="flex gap-4 justify-center">
+            <button
+              onClick={() => {
+                setValue("role", "doctor")
+                setRole("doctor")
+              }}
+              className={`px-4 py-2 rounded-full font-semibold transition ${role === "doctor"
                 ? "bg-[#00c37a] text-black"
                 : "bg-gray-800 text-white border border-[#00c37a]/30"
-            }`}
-            onClick={() => setRole("doctor")}
-          >
-            As Doctor
-          </button>
-          <button
-            className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
-              role === "user"
+                }`}
+            >
+              Doctor
+            </button>
+            <button
+              onClick={() => {
+                setValue("role", "user")
+                setRole("user")
+              }}
+              className={`px-4 py-2 rounded-full font-semibold transition ${role === "user"
                 ? "bg-[#00c37a] text-black"
                 : "bg-gray-800 text-white border border-[#00c37a]/30"
-            }`}
-            onClick={() => setRole("user")}
-          >
-            As Patient
-          </button>
+                }`}
+            >
+              Patient
+            </button>
+          </div>
         </div>
 
-        {/* Form Container */}
-        <div className="bg-[#111]/60 backdrop-blur-xl border border-[#08392e] rounded-2xl overflow-hidden shadow-md">
+
+        <div className="bg-[#111]/60 backdrop-blur-xl border border-[#08392e] rounded-2xl shadow-md overflow-hidden">
           <div className="flex flex-col lg:flex-row">
-            {/* Illustration */}
+            {/* Left Illustration */}
             <div className="lg:w-1/2 bg-[#0f1f1b] p-6 flex flex-col justify-center">
               <div className="text-center mb-4">
                 <MdHealthAndSafety className="mx-auto h-14 w-14 text-[#00c37a]" />
@@ -157,15 +144,9 @@ const SignUpForm = () => {
                   Secure your health records and consultations
                 </p>
               </div>
-
-              {/* Hidden on phone_number, visible on sm and up */}
               <div className="h-80 relative hidden sm:block border border-[#00c37a]/20 rounded-xl overflow-hidden">
                 <Image
-                  src={
-                    role === "doctor"
-                      ? "/Assets/Svg/DrSignUp.svg"
-                      : "/Assets/Svg/DrSignUp.svg"
-                  }
+                  src="/Assets/Svg/DrSignUp.svg"
                   alt="Illustration"
                   fill
                   className="object-contain"
@@ -174,171 +155,137 @@ const SignUpForm = () => {
               </div>
             </div>
 
-            {/* Form */}
+            {/* Right Form Panel */}
             <div className="w-full p-4 sm:p-6 lg:p-8">
-              <form onSubmit={handleSubmit} className="space-y-5 text-sm">
+
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 text-sm">
                 {/* Full Name */}
                 <div>
                   <label className="block mb-1 text-gray-300">Full Name</label>
-                  <div className="flex items-center bg-[#1a1a1a] border border-[#08392e] rounded-md px-2 py-1.5">
-                    <FaUser className="text-gray-500 mr-2 text-sm" />
+                  <div className="flex items-center bg-[#1a1a1a] border border-[#08392e] rounded-md px-2 py-1.5 relative">
+                    <FaUser />
                     <input
+                      {...register('name')}
                       type="text"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleChange}
-                      placeholder="Your name"
-                      required
-                      className="bg-transparent w-full outline-none text-white placeholder-gray-500 text-sm"
+                      placeholder="Full Name"
+                      className="bg-transparent w-full outline-none text-white placeholder-gray-500 text-sm ml-2"
                     />
                   </div>
+                  {errors.name && <p className="text-red-500 text-xs">{errors.name.message}</p>}
                 </div>
 
-                {/* phone_number Number */}
+                {/* Mobile Number */}
                 <div>
-                  <label className="block mb-1 text-gray-300">
-                    Mobile Number
-                  </label>
-                  <div className="flex items-center bg-[#1a1a1a] border border-[#08392e] rounded-md px-2 py-1.5">
-                    <FaPhone className="text-gray-500 mr-2 text-sm" />
+                  <label className="block mb-1 text-gray-300">Mobile Number</label>
+                  <div className="flex items-center bg-[#1a1a1a] border border-[#08392e] rounded-md px-2 py-1.5 relative">
+                    <FaPhone />
                     <input
+                      {...register('phone_number')}
                       type="text"
-                      name="phone_number"
-                      value={formData.phone_number}
-                      onChange={handleChange}
-                      placeholder="+91 98765 43210"
-                      required
-                      className="bg-transparent w-full outline-none text-white placeholder-gray-500 text-sm"
+                      placeholder="Mobile Number"
+                      className="bg-transparent w-full outline-none text-white placeholder-gray-500 text-sm ml-2"
                     />
                   </div>
+                  {errors.phone_number && <p className="text-red-500 text-xs">{errors.phone_number.message}</p>}
                 </div>
 
                 {/* Email */}
                 <div>
                   <label className="block mb-1 text-gray-300">Email</label>
-                  <div className="flex items-center bg-[#1a1a1a] border border-[#08392e] rounded-md px-2 py-1.5">
-                    <FaEnvelope className="text-gray-500 mr-2 text-sm" />
+                  <div className="flex items-center bg-[#1a1a1a] border border-[#08392e] rounded-md px-2 py-1.5 relative">
+                    <FaEnvelope />
                     <input
+                      {...register('email')}
                       type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder="you@example.com"
-                      required
-                      className="bg-transparent w-full outline-none text-white placeholder-gray-500 text-sm"
+                      placeholder="Email"
+                      className="bg-transparent w-full outline-none text-white placeholder-gray-500 text-sm ml-2"
                     />
                   </div>
+                  {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
                 </div>
 
                 {/* Password */}
                 <div>
                   <label className="block mb-1 text-gray-300">Password</label>
                   <div className="flex items-center bg-[#1a1a1a] border border-[#08392e] rounded-md px-2 py-1.5 relative">
-                    <FaLock className="text-gray-500 mr-2 text-sm" />
+                    <FaLock />
                     <input
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      placeholder="Enter password"
-                      required
-                      className="bg-transparent w-full outline-none text-white placeholder-gray-500 text-sm"
+                      {...register('password')}
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="Password"
+                      className="bg-transparent w-full outline-none text-white placeholder-gray-500 text-sm ml-2"
                     />
-                    <div
+                    <span
                       className="absolute right-2 text-gray-500 cursor-pointer text-xs"
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? <FaEyeSlash /> : <FaEye />}
-                    </div>
+                    </span>
                   </div>
+                  {errors.password && <p className="text-red-500 text-xs">{errors.password.message}</p>}
                 </div>
 
-                {/* Doctor-specific fields */}
-                {role === "doctor" && (
+                {/* Doctor Only Fields */}
+                {role === 'doctor' && (
                   <>
                     {/* Specialization */}
                     <div>
-                      <label className="block mb-1 text-gray-300">
-                        Specialization
-                      </label>
+                      <label className="block mb-1 text-gray-300">Specialization</label>
                       <div className="flex items-center bg-[#1a1a1a] border border-[#08392e] rounded-md px-2 py-1.5">
-                        <FaAward className="text-gray-500 mr-2 text-sm" />
+                        <FaAward />
                         <input
+                          {...register('specialization')}
                           type="text"
-                          name="specialization"
-                          value={formData.specialization}
-                          onChange={handleChange}
-                          placeholder="Cardiology"
-                          required
-                          className="bg-transparent w-full outline-none text-white placeholder-gray-500 text-sm"
+                          placeholder="Specialization"
+                          className="bg-transparent w-full outline-none text-white placeholder-gray-500 text-sm ml-2"
                         />
                       </div>
+                      {errors.specialization && <p className="text-red-500 text-xs">{errors.specialization.message}</p>}
                     </div>
 
                     {/* Experience */}
                     <div>
-                      <label className="block mb-1 text-gray-300">
-                        Experience (years)
-                      </label>
+                      <label className="block mb-1 text-gray-300">Experience (Years)</label>
                       <div className="flex items-center bg-[#1a1a1a] border border-[#08392e] rounded-md px-2 py-1.5">
-                        <MdWork className="text-gray-500 mr-2 text-sm" />
+                        <MdWork />
                         <input
+                          {...register('experience', { valueAsNumber: true })}
                           type="number"
-                          name="experience"
-                          value={formData.experience}
-                          onChange={handleChange}
-                          placeholder="5"
-                          required
-                          className="bg-transparent w-full outline-none text-white placeholder-gray-500 text-sm"
+                          placeholder="Experience"
+                          className="bg-transparent w-full outline-none text-white placeholder-gray-500 text-sm ml-2"
                         />
                       </div>
+                      {errors.experience && <p className="text-red-500 text-xs">{errors.experience.message}</p>}
                     </div>
 
-                    {/* License No */}
+                    {/* License */}
                     <div>
-                      <label className="block mb-1 text-gray-300">
-                        License No.
-                      </label>
+                      <label className="block mb-1 text-gray-300">License No.</label>
                       <div className="flex items-center bg-[#1a1a1a] border border-[#08392e] rounded-md px-2 py-1.5">
-                        <FaIdCard className="text-gray-500 mr-2 text-sm" />
+                        <FaIdCard />
                         <input
+                          {...register('license')}
                           type="text"
-                          name="license"
-                          value={formData.license}
-                          onChange={handleChange}
-                          placeholder="DMC123456"
-                          required
-                          className="bg-transparent w-full outline-none text-white placeholder-gray-500 text-sm"
+                          placeholder="License No."
+                          className="bg-transparent w-full outline-none text-white placeholder-gray-500 text-sm ml-2"
                         />
                       </div>
+                      {errors.license && <p className="text-red-500 text-xs">{errors.license.message}</p>}
                     </div>
 
-                    {/* Certificate Upload */}
-                    <div>
-                      <label className="block mb-1 text-gray-300">
-                        Medical Certificate
-                      </label>
-                      <input
-                        type="file"
-                        name="certificate"
-                        onChange={handleChange}
-                        required
-                        className="bg-[#1a1a1a] border border-[#08392e] text-gray-300 rounded-md p-2 w-full file:bg-[#00c37a] file:text-black file:font-medium file:px-4 file:py-2 file:rounded-md text-sm"
-                      />
-                    </div>
+
                   </>
                 )}
 
-                {/* Submit Button */}
+                {/* Submit */}
                 <button
                   type="submit"
                   className="w-full bg-[#00c37a] text-black font-semibold py-2.5 rounded-md hover:bg-[#00aa66] transition text-sm"
                 >
-                  {role === "doctor"
-                    ? "Register as Doctor"
-                    : "Register as Patient"}
+                  {role === 'doctor' ? 'Register as Doctor' : 'Register as Patient'}
                 </button>
               </form>
+
             </div>
           </div>
         </div>

@@ -1,18 +1,34 @@
 'use client';
 
-import { navLinks } from '@/app/utils/data';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import React, { useState, useRef, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
-import CustomButton from '../Custom_UI/CustomButton';
 import { AnimatePresence, motion } from 'framer-motion';
+
+import { navLinks } from '@/app/utils/data';
+import CustomButton from '../Custom_UI/CustomButton';
 
 const Header = () => {
   const router = useRouter();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
-  // Close menu on outside click
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState<{ name: string } | null>(null);
+
+  // Load user from localStorage once on client
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userString = localStorage.getItem('user');
+    if (token && userString) {
+      try {
+        setUser(JSON.parse(userString));
+      } catch (e) {
+        console.error('Invalid user JSON');
+      }
+    }
+  }, []);
+
+  // Close mobile menu on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -23,39 +39,67 @@ const Header = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const toggleMobileMenu = () => setIsMobileMenuOpen(prev => !prev);
+
+  const handleNavigation = useCallback((href: string) => {
+    router.push(href);
+    setIsMobileMenuOpen(false);
+  }, [router]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    router.push('/Login');
+  };
+
   return (
-    <header className="sticky top-0 z-50 bg-gradient-to-b from-[#08231B]/90 to-[#081511]/90 backdrop-blur-md border-b border-[#00C896]">
-      <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-        
+    <header className="sticky container top-0 z-50 bg-gradient-to-b from-[#08231B]/90 to-[#081511]/90 backdrop-blur-md border-b border-[#00C896]">
+      <div className=" mx-auto px-4 py-3 flex justify-between items-center">
+
         {/* Logo */}
         <div
-          className="text-2xl  font-bold tracking-wide text-white cursor-pointer"
+          className="text-2xl font-bold tracking-wide text-white cursor-pointer"
           onClick={() => router.push('/')}
         >
           DrConnect
         </div>
 
-        {/* Desktop Nav */}
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6 text-white">
-          {navLinks.map((item, index) => (
+          {navLinks.map(({ name, href }, index) => (
             <span
               key={index}
               className="text-sm cursor-pointer hover:text-[#00C896] transition-colors"
-              onClick={() => router.push(item.href)}
+              onClick={() => handleNavigation(href)}
             >
-              {item.name}
+              {name}
             </span>
           ))}
         </nav>
 
-        {/* Desktop Buttons */}
-        <div className="hidden md:flex items-center gap-3 ">
-          <CustomButton variant="contained" text="Login" onClick={() => router.push('/Login')} />
-          <CustomButton variant="contained" text="Sign up" onClick={() => router.push('/Signup')} />
+        {/* Auth Section */}
+        <div className="hidden md:flex items-center space-x-4">
+          {user ? (
+            <>
+              <span className="text-white text-sm">Welcome, {user.name}</span>
+              <CustomButton
+                text="Logout"
+                variant="outlined"
+                onClick={handleLogout}
+              />
+            </>
+          ) : (
+            <CustomButton
+              text="Login"
+              variant="contained"
+              onClick={() => router.push('/Login')}
+            />
+          )}
         </div>
 
-        {/* Mobile Toggle */}
-        <button className="md:hidden z-50 text-white" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+        {/* Mobile Toggle Button */}
+        <button className="md:hidden text-white z-50" onClick={toggleMobileMenu}>
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
@@ -69,41 +113,41 @@ const Header = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.25 }}
-            className="md:hidden absolute top-full left-0 w-full bg-gradient-to-b from-[#08231B] to-[#081511] px-4 pt-4 pb-6 border-b border-[#00C896] z-40 rounded-b-xl shadow-lg "
+            className="md:hidden absolute top-full left-0 w-full bg-gradient-to-b from-[#08231B] to-[#081511] px-4 pt-4 pb-6 border-b border-[#00C896] z-40 rounded-b-xl shadow-lg"
           >
             <div className="space-y-3 text-white">
-              {navLinks.map((item, index) => (
+              {navLinks.map(({ name, href }, index) => (
                 <div
                   key={index}
                   className="text-sm py-2 px-3 rounded hover:bg-[#00c37a]/10 transition hover:text-[#00C896] cursor-pointer"
-                  onClick={() => {
-                    router.push(item.href);
-                    setIsMobileMenuOpen(false);
-                  }}
+                  onClick={() => handleNavigation(href)}
                 >
-                  {item.name}
+                  {name}
                 </div>
               ))}
             </div>
 
-            {/* Mobile Buttons */}
             <div className="flex flex-col sm:flex-row sm:justify-center gap-3 mt-5">
-              <CustomButton
-                variant="contained"
-                text="Login"
-                onClick={() => {
-                  router.push('/Login');
-                  setIsMobileMenuOpen(false);
-                }}
-              />
-              <CustomButton
-                variant="contained"
-                text="Sign up"
-                onClick={() => {
-                  router.push('/Signup');
-                  setIsMobileMenuOpen(false);
-                }}
-              />
+              {user ? (
+                <CustomButton
+                  text="Logout"
+                  variant="contained"
+                  onClick={handleLogout}
+                />
+              ) : (
+                <>
+                  <CustomButton
+                    text="Login"
+                    variant="contained"
+                    onClick={() => handleNavigation('/Login')}
+                  />
+                  <CustomButton
+                    text="Sign up"
+                    variant="contained"
+                    onClick={() => handleNavigation('/Signup')}
+                  />
+                </>
+              )}
             </div>
           </motion.div>
         )}

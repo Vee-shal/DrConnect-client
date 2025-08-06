@@ -11,16 +11,16 @@ import CustomLoader from "./components/Custom_UI/CustomLoader";
 const Page = () => {
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // simulate loading delay
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
+  // useEffect(() => {
+  //   // simulate loading delay
+  //   const timer = setTimeout(() => {
+  //     setLoading(false);
+  //   }, 2000);
 
-    return () => clearTimeout(timer);
-  }, []);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
-  if (loading) return <CustomLoader />;
+  // if (loading) return <CustomLoader />;
 
   return (
     <div className="container">
