@@ -8,7 +8,7 @@ import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaUserMd } from 'react-icons/fa'
 import { _makePostRequest } from '@/app/lib/api/api';
 import { endpoints } from '@/app/lib/api/endpoints';
 import { LoginSchema } from '@/app/lib/validations/LoginSchema';
-
+import CustomLoader from '@/app/components/Custom_UI/CustomLoader';
 type LoginFormInputs = {
   email: string;
   password: string;
@@ -17,6 +17,7 @@ type LoginFormInputs = {
 const LoginPage = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const token = typeof window !== "undefined" && localStorage.getItem("token")
   const [isLoading, setIsLoading] = useState(false);
   const {
     register,
@@ -36,7 +37,7 @@ const LoginPage = () => {
         localStorage.setItem("token", res.token);
         localStorage.setItem("user", JSON.stringify(res.user));
         toast.success("Login successful!");
-        router.push("/profile");
+        router.push("/");
       }
     } catch (err) {
       console.error('Login error:', err);
@@ -46,6 +47,9 @@ const LoginPage = () => {
     }
   };
 
+  if(token){
+    router.push('/')
+  }
 
   return (
     <section className="container flex items-center justify-center bg-[#111111] px-4 py-10">

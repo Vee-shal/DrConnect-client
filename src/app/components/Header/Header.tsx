@@ -14,6 +14,7 @@ const Header = () => {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<{ name: string } | null>(null);
+  const authToken = typeof window != "undefined" && localStorage.getItem('token');
 
   // Load user from localStorage once on client
   useEffect(() => {
@@ -163,7 +164,7 @@ const Header = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row sm:justify-center gap-3 mt-5">
-              {user ? (
+              {authToken ? (
                 <CustomButton
                   text="Logout"
                   variant="contained"
