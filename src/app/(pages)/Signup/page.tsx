@@ -20,6 +20,7 @@ import { _makePostRequest } from "@/app/lib/api/api";
 import { endpoints } from "@/app/lib/api/endpoints";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/app/lib/store/authStore";
 type Role = "doctor" | "user";
 type SignupFormInputs = {
   name: string;
@@ -74,12 +75,12 @@ const SignUpForm = () => {
     };
     try {
       const res = await _makePostRequest(endpoints.AUTH.REGISTER, {
-        ...payload , verified : false
+        ...payload, verified: false
       });
       console.log("res===>", res)
       if (res?.token && res?.user) {
-        localStorage.setItem("token", res.token)
-        localStorage.setItem("user", JSON.stringify(res.user))
+        useAuthStore.getState().setUser(res.user);
+        useAuthStore.getState().setToken(res.token);
         toast.success("Registration successful!");
         router.push("/profile");
       }

@@ -1,5 +1,6 @@
 import config from "@/app/config/config";
 import axios, { AxiosResponse } from "axios";
+import { useAuthStore } from "../store/authStore";
 
 
 export const BASE_URL: string =
@@ -14,7 +15,7 @@ export const http = axios.create({
 
 http.interceptors.request.use(
   (conf: any) => {
-    const access_token = localStorage.getItem("access_token");
+    const access_token =  useAuthStore.getState().token;
 
     if (access_token) {
       conf.headers = {

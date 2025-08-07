@@ -9,6 +9,7 @@ import { _makePostRequest } from '@/app/lib/api/api';
 import { endpoints } from '@/app/lib/api/endpoints';
 import { LoginSchema } from '@/app/lib/validations/LoginSchema';
 import CustomLoader from '@/app/components/Custom_UI/CustomLoader';
+import { useAuthStore } from '@/app/lib/store/authStore';
 type LoginFormInputs = {
   email: string;
   password: string;
@@ -17,7 +18,7 @@ type LoginFormInputs = {
 const LoginPage = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const token = typeof window !== "undefined" && localStorage.getItem("token")
+const token = useAuthStore((state)=>state.token);
   const [isLoading, setIsLoading] = useState(false);
   const {
     register,
@@ -34,8 +35,10 @@ const LoginPage = () => {
         ...data, verified: false
       });
       if (res?.token) {
-        localStorage.setItem("token", res.token);
-        localStorage.setItem("user", JSON.stringify(res.user));
+       
+        useAuthStore.getState().setUser(res.user);
+        useAuthStore.getState().setToken(res.token);
+
         toast.success("Login successful!");
         router.push("/");
       }
@@ -47,7 +50,7 @@ const LoginPage = () => {
     }
   };
 
-  if(token){
+  if (token) {
     router.push('/')
   }
 
@@ -124,7 +127,7 @@ const LoginPage = () => {
           {/* Forgot Password */}
           <div className="flex justify-between items-center">
 
-            <div onClick={()=>{
+            <div onClick={() => {
               router.push("/forgotPassword")
             }} className="text-xs cursor-pointer text-[#00c37a] hover:underline">
               Forgot Password?

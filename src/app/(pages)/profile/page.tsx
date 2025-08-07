@@ -9,6 +9,7 @@ import { _makePostRequest } from "@/app/lib/api/api";
 import { endpoints } from "@/app/lib/api/endpoints";
 import toast from "react-hot-toast";
 import { profileSchema } from "@/app/lib/validations/ProfileSchema";
+import { useAuthStore } from "@/app/lib/store/authStore";
 
 const Page = () => {
   const router = useRouter();
@@ -17,17 +18,17 @@ const Page = () => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const userString = localStorage.getItem("user");
-    const parsedUser = userString ? JSON.parse(userString) : null;
-    const tokenFromStorage = localStorage.getItem("token");
+const user = useAuthStore((state)=>state.user);
+const token = useAuthStore((state)=>state.token);
 
-    if (!parsedUser || !tokenFromStorage) {
+
+    if (!user || !token) {
       router.push("/Login");
       return;
     }
 
-    setUser(parsedUser);
-    setToken(tokenFromStorage);
+    setUser(user);
+    setToken(token);
     setMounted(true);
   }, [router]);
 

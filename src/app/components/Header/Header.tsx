@@ -7,27 +7,20 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import { navLinks } from '@/app/utils/data';
 import CustomButton from '../Custom_UI/CustomButton';
+import { useAuthStore } from '@/app/lib/store/authStore';
 
 const Header = () => {
+
+  const user = useAuthStore(state => state.user)
+  const logout = useAuthStore(state => state.logout)
+  const token = useAuthStore(state => state.token)
+  const isHydrated = useAuthStore(state => state.isHydrated)
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [user, setUser] = useState<{ name: string } | null>(null);
-  const authToken = typeof window != "undefined" && localStorage.getItem('token');
 
-  // Load user from localStorage once on client
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userString = localStorage.getItem('user');
-    if (token && userString) {
-      try {
-        setUser(JSON.parse(userString));
-      } catch (e) {
-        console.error('Invalid user JSON');
-      }
-    }
-  }, []);
+
 
   // Close mobile menu on outside click
   useEffect(() => {
@@ -48,15 +41,14 @@ const Header = () => {
   }, [router]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setUser(null);
+    logout()
     router.push('/Login');
   };
 
   const goToProfile = () => {
     router.push('/profile');
   };
+   if (!isHydrated) return null; // or a loading spinner/skeleton
 
   return (
     <header className="sticky container top-0 z-50 bg-gradient-to-b from-[#08231B]/90 to-[#081511]/90 backdrop-blur-md border-b border-[#00C896]">
@@ -164,7 +156,7 @@ const Header = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row sm:justify-center gap-3 mt-5">
-              {authToken ? (
+              {token ? (
                 <CustomButton
                   text="Logout"
                   variant="contained"

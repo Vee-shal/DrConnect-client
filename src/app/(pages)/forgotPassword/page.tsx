@@ -14,6 +14,7 @@ import toast from 'react-hot-toast';
 import { resetPasswordSchema } from '@/app/lib/validations/resetPasswordSchema';
 import { useRouter } from 'next/navigation';
 import CustomLoader from '@/app/components/Custom_UI/CustomLoader';
+import { useAuthStore } from '@/app/lib/store/authStore';
 
 type EmailFormData = {
   email: string;
@@ -110,8 +111,8 @@ const ForgotPasswordWithOTP = () => {
   };
  
  useEffect(() => {
-    const token = localStorage.getItem('token'); // or check token
-    if (token) {
+const token = useAuthStore((state)=>state.token);
+  if (token) {
       router.replace('/');
     } else {
       setIsAuthChecked(true); // only render children after auth check
