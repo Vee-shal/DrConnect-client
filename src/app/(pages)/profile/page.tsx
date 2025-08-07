@@ -111,7 +111,7 @@ const token = useAuthStore((state)=>state.token);
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-white">
-          {/* Personal Information Section */}
+          {/* LEFT SIDE: Personal Info */}
           <div className="space-y-6">
             <div className="pb-2 border-b border-[#08392e]/50">
               <h3 className="text-lg font-semibold text-white">
@@ -167,139 +167,153 @@ const token = useAuthStore((state)=>state.token);
             ))}
           </div>
 
-          {/* Professional Details Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {user?.role === "doctor" && user?.verified && (
-              <>
-                <div className="pb-2 border-b border-[#08392e]/50">
-                  <h3 className="text-lg font-semibold text-[#00c37a]">
-                    Practice Information
-                  </h3>
-                </div>
+          <div className="flex flex-col justify-between space-y-8 bg-[#0f0f0f] p-6 rounded-xl border border-[#08392e]/40 shadow-md">
+            {user?.role === "doctor" && user?.verified ? (
+           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
-                <div className="space-y-2">
-                  <label
-                    htmlFor="clinicName"
-                    className="block text-xs font-medium text-gray-400 uppercase tracking-wider"
-                  >
-                    Practice/Clinic Name
-                  </label>
-                  <input
-                    type="text"
-                    id="clinicName"
-                    {...register("clinicName")}
-                    placeholder="e.g. City Medical Center"
-                    className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-[#08392e] rounded-md text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#00c37a]/50"
-                  />
-                  {errors.clinicName && (
-                    <p className="text-xs text-red-400 mt-1">
-                      {errors.clinicName.message as string}
-                    </p>
-                  )}
-                </div>
+  {/* Section Heading */}
+  <div className="border-b border-[#00c37a]/30 pb-3">
+    <h2 className="text-2xl font-semibold text-white tracking-wide">
+      Practice Information
+    </h2>
+    <p className="text-sm text-gray-400">
+      Update your clinic details and consultation fees.
+    </p>
+  </div>
 
-                <div className="space-y-2">
-                  <label
-                    htmlFor="clinicAddress"
-                    className="block text-xs font-medium text-gray-400 uppercase tracking-wider"
-                  >
-                    Practice Address
-                  </label>
-                  <input
-                    type="text"
-                    id="clinicAddress"
-                    {...register("clinicAddress")}
-                    placeholder="Full clinic address"
-                    className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-[#08392e] rounded-md text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#00c37a]/50"
-                  />
-                  {errors.clinicAddress && (
-                    <p className="text-xs text-red-400 mt-1">
-                      {errors.clinicAddress.message as string}
-                    </p>
-                  )}
-                </div>
+  {/* Clinic Name */}
+  <div className="space-y-2">
+    <label htmlFor="clinicName" className="text-sm text-white font-medium">
+      Clinic/Hospital Name
+    </label>
+    <input
+      id="clinicName"
+      type="text"
+      {...register("clinicName")}
+      placeholder="e.g. MedLife Clinic"
+      className="w-full  text-white placeholder-gray-500 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00c37a]"
+    />
+    {errors.clinicName && (
+      <p className="text-sm text-red-500">{errors.clinicName.message as string}</p>
+    )}
+  </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label
-                      htmlFor="offlinePrice"
-                      className="block text-xs font-medium text-gray-400 uppercase tracking-wider"
+  {/* Clinic Address */}
+  <div className="space-y-2">
+    <label htmlFor="clinicAddress" className="text-sm text-white font-medium">
+      Clinic Address
+    </label>
+    <input
+      id="clinicAddress"
+      type="text"
+      {...register("clinicAddress")}
+      placeholder="e.g. 123 MG Road, Udaipur"
+      className="w-full  text-white placeholder-gray-500 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00c37a]"
+    />
+    {errors.clinicAddress && (
+      <p className="text-sm text-red-500">{errors.clinicAddress.message as string}</p>
+    )}
+  </div>
+
+  {/* Fees Section */}
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    {/* In-Person Fee */}
+    <div className="space-y-2">
+      <label htmlFor="offlinePrice" className="text-sm text-white font-medium">
+        In-Person Fee (₹)
+      </label>
+      <div className="relative">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">₹</span>
+        <input
+          id="offlinePrice"
+          type="number"
+          {...register("offlinePrice")}
+          placeholder="500"
+          className="w-full  text-white placeholder-gray-500 border border-gray-700 rounded-lg px-8 py-2 focus:outline-none focus:ring-2 focus:ring-[#00c37a]"
+        />
+      </div>
+      {errors.offlinePrice && (
+        <p className="text-sm text-red-500">{errors.offlinePrice.message as string}</p>
+      )}
+    </div>
+
+    {/* Online Fee */}
+    <div className="space-y-2">
+      <label htmlFor="onlinePrice" className="text-sm text-white font-medium">
+        Online Fee (₹/min)
+      </label>
+      <div className="relative">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">₹</span>
+        <input
+          id="onlinePrice"
+          type="number"
+          {...register("onlinePrice")}
+          placeholder="20"
+          className="w-full  text-white placeholder-gray-500 border border-gray-700 rounded-lg px-8 py-2 pr-12 focus:outline-none focus:ring-2 focus:ring-[#00c37a]"
+        />
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">/min</span>
+      </div>
+      {errors.onlinePrice && (
+        <p className="text-sm text-red-500">{errors.onlinePrice.message as string}</p>
+      )}
+    </div>
+  </div>
+
+  {/* Submit Button */}
+  <div className="pt-4">
+    <button
+      type="submit"
+      className="w-full py-3 rounded-lg bg-gradient-to-r from-[#00c37a] to-[#019764] text-black font-semibold hover:opacity-90 transition-all flex justify-center items-center gap-2"
+    >
+      Save Changes
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+      </svg>
+    </button>
+  </div>
+</form>
+
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full text-center space-y-4 text-gray-400">
+                {user?.role === "doctor" ? (
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-12 h-12 text-[#00c37a]"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
                     >
-                      In-Person Consultation Fee
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                        ₹
-                      </span>
-                      <input
-                        type="text"
-                        id="offlinePrice"
-                        {...register("offlinePrice")}
-                        placeholder="500"
-                        className="w-full pl-8 pr-4 py-2.5 bg-[#1a1a1a] border border-[#08392e] rounded-md text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#00c37a]/50"
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M13 16h-1v-4h-1m1-4h.01M12 18a6 6 0 100-12 6 6 0 000 12z"
                       />
-                    </div>
-                    {errors.offlinePrice && (
-                      <p className="text-xs text-red-400 mt-1">
-                        {errors.offlinePrice.message as string}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <label
-                      htmlFor="onlinePrice"
-                      className="block text-xs font-medium text-gray-400 uppercase tracking-wider"
-                    >
-                      Teleconsultation Rate
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                        ₹
-                      </span>
-                      <input
-                        type="text"
-                        id="onlinePrice"
-                        {...register("onlinePrice")}
-                        placeholder="10"
-                        className="w-full pl-8 pr-4 py-2.5 bg-[#1a1a1a] border border-[#08392e] rounded-md text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#00c37a]/50"
-                      />
-                      <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">
-                        /min
-                      </span>
-                    </div>
-                    {errors.onlinePrice && (
-                      <p className="text-xs text-red-400 mt-1">
-                        {errors.onlinePrice.message as string}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </>
+                    </svg>
+                    <p className="text-sm">
+                      Your profile is under verification. Please wait to access
+                      clinic details.
+                    </p>
+                  </>
+                ) : (
+                  // 👇 This will show image if not doctor
+                  <img
+                    src="/Assets/Svg/Profile.svg"
+                    alt="Not available for patient"
+                    className="w-60 h-auto object-contain"
+                  />
+                )}
+              </div>
             )}
-
-            <div className="pt-2">
-              <button
-                type="submit"
-                className="w-full py-3 px-4 bg-gradient-to-r from-[#00c37a] to-[#00aa66] text-black font-medium rounded-md shadow transition-all duration-200 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#00c37a]/50 focus:ring-offset-2 focus:ring-offset-[#111] flex items-center justify-center"
-              >
-                Save Changes
-                <svg
-                  className="ml-2 h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
       </div>
     </section>
@@ -307,3 +321,4 @@ const token = useAuthStore((state)=>state.token);
 };
 
 export default Page;
+

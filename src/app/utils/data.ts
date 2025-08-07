@@ -5,6 +5,7 @@ export const navLinks = [
   { name: "About", href: "/About" },
   { name: "Contact Us", href: "/Contact" },
   { name: "Terms and Conditions", href: "/TermsCondition" },
+  { name: "Dashboard", href: "/Dashboard" },
 
 ];
 
