@@ -1,70 +1,76 @@
-'use client';
+"use client";
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { Menu, X } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { Menu, X } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 
-import { navLinks } from '@/app/utils/data';
-import CustomButton from '../Custom_UI/CustomButton';
-import { useAuthStore } from '@/app/lib/store/authStore';
+import { guestLinks, doctorLinks, patientLinks } from "@/app/utils/data";
+import CustomButton from "../Custom_UI/CustomButton";
+import { useAuthStore } from "@/app/lib/store/authStore";
 
 const Header = () => {
-
-  const user = useAuthStore(state => state.user)
-  const logout = useAuthStore(state => state.logout)
-  const token = useAuthStore(state => state.token)
-  const isHydrated = useAuthStore(state => state.isHydrated)
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+  const token = useAuthStore((state) => state.token);
+  const isHydrated = useAuthStore((state) => state.isHydrated);
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-
-
-  // Close mobile menu on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsMobileMenuOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const toggleMobileMenu = () => setIsMobileMenuOpen(prev => !prev);
+  const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
 
-  const handleNavigation = useCallback((href: string) => {
-    router.push(href);
-    setIsMobileMenuOpen(false);
-  }, [router]);
+  const handleNavigation = useCallback(
+    (href: string) => {
+      router.push(href);
+      setIsMobileMenuOpen(false);
+    },
+    [router]
+  );
 
   const handleLogout = () => {
-    logout()
-    router.push('/Login');
+    logout();
+    router.push("/Login");
   };
 
   const goToProfile = () => {
-    router.push('/profile');
+    router.push("/profile");
   };
-   if (!isHydrated) return null; // or a loading spinner/skeleton
+
+  if (!isHydrated) return null;
+
+  const navToRender =
+    user?.role === "doctor"
+      ? doctorLinks
+      : user?.role === "user"
+      ? patientLinks
+      : guestLinks;
 
   return (
     <header className="sticky container top-0 z-50 bg-gradient-to-b from-[#08231B]/90 to-[#081511]/90 backdrop-blur-md border-b border-[#00C896]">
       <div className="mx-auto px-4 py-3 flex justify-between items-center">
-
         {/* Logo */}
         <div
           className="text-2xl font-bold tracking-wide text-white cursor-pointer"
-          onClick={() => router.push('/')}
+          onClick={() => router.push("/")}
         >
           DrConnect
         </div>
 
-        {/* Desktop Navigation */}
+        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center space-x-6 text-white">
-          {navLinks.map(({ name, href }, index) => (
+          {navToRender.map(({ name, href }, index) => (
             <span
               key={index}
               className="text-sm cursor-pointer hover:text-[#00C896] transition-colors"
@@ -75,7 +81,7 @@ const Header = () => {
           ))}
         </nav>
 
-        {/* Auth Section for Desktop */}
+        {/* Desktop Auth */}
         <div className="hidden md:flex items-center space-x-4">
           {user ? (
             <>
@@ -90,7 +96,12 @@ const Header = () => {
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A8.962 8.962 0 0112 15c2.21 0 4.21.804 5.879 2.121M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5.121 17.804A8.962 8.962 0 0112 15c2.21 0 4.21.804 5.879 2.121M15 10a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
                 </svg>
               </button>
               <CustomButton
@@ -103,12 +114,12 @@ const Header = () => {
             <CustomButton
               text="Login"
               variant="contained"
-              onClick={() => router.push('/Login')}
+              onClick={() => router.push("/Login")}
             />
           )}
         </div>
 
-        {/* Mobile Section: Profile Icon + Hamburger */}
+        {/* Mobile Section */}
         <div className="md:hidden flex items-center gap-3 z-50">
           {user && (
             <button
@@ -122,7 +133,12 @@ const Header = () => {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A8.962 8.962 0 0112 15c2.21 0 4.21.804 5.879 2.121M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5.121 17.804A8.962 8.962 0 0112 15c2.21 0 4.21.804 5.879 2.121M15 10a3 3 0 11-6 0 3 3 0 016 0z"
+                />
               </svg>
             </button>
           )}
@@ -144,7 +160,7 @@ const Header = () => {
             className="md:hidden absolute top-full left-0 w-full bg-gradient-to-b from-[#08231B] to-[#081511] px-4 pt-4 pb-6 border-b border-[#00C896] z-40 rounded-b-xl shadow-lg"
           >
             <div className="space-y-3 text-white">
-              {navLinks.map(({ name, href }, index) => (
+              {navToRender.map(({ name, href }, index) => (
                 <div
                   key={index}
                   className="text-sm py-2 px-3 rounded hover:bg-[#00c37a]/10 transition hover:text-[#00C896] cursor-pointer"
@@ -167,12 +183,12 @@ const Header = () => {
                   <CustomButton
                     text="Login"
                     variant="contained"
-                    onClick={() => handleNavigation('/Login')}
+                    onClick={() => handleNavigation("/Login")}
                   />
                   <CustomButton
                     text="Sign up"
                     variant="contained"
-                    onClick={() => handleNavigation('/Signup')}
+                    onClick={() => handleNavigation("/Signup")}
                   />
                 </>
               )}

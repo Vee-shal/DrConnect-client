@@ -2,7 +2,14 @@
 import React from "react";
 import { FaUserMd, FaCalendarAlt, FaFilePrescription, FaHeartbeat } from "react-icons/fa";
 
-const PatientDashboard = () => {
+interface PatientDashboardProps {
+  user: {
+    name: string;
+    email: string;
+  };
+  token: string;
+}
+const PatientDashboard = ({user,token}:PatientDashboardProps) => {
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-6 space-y-6">
       {/* Header */}

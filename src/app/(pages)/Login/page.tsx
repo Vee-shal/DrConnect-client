@@ -1,6 +1,7 @@
 'use client';
+
 import toast from 'react-hot-toast';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'next/navigation';
@@ -8,8 +9,8 @@ import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaUserMd } from 'react-icons/fa'
 import { _makePostRequest } from '@/app/lib/api/api';
 import { endpoints } from '@/app/lib/api/endpoints';
 import { LoginSchema } from '@/app/lib/validations/LoginSchema';
-import CustomLoader from '@/app/components/Custom_UI/CustomLoader';
 import { useAuthStore } from '@/app/lib/store/authStore';
+
 type LoginFormInputs = {
   email: string;
   password: string;
@@ -18,8 +19,10 @@ type LoginFormInputs = {
 const LoginPage = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-const token = useAuthStore((state)=>state.token);
   const [isLoading, setIsLoading] = useState(false);
+
+  const token = useAuthStore((state) => state.token);
+
   const {
     register,
     handleSubmit,
@@ -28,19 +31,27 @@ const token = useAuthStore((state)=>state.token);
     resolver: yupResolver(LoginSchema),
   });
 
+  // ✅ Redirect if already logged in
+  useEffect(() => {
+    if (token) {
+      router.push('/');
+    }
+  }, [token, router]);
+
   const onSubmit = async (data: LoginFormInputs) => {
     setIsLoading(true);
     try {
       const res = await _makePostRequest(endpoints.AUTH.LOGIN, {
-        ...data, verified: false
+        ...data,
+        verified: false,
       });
+
       if (res?.token) {
-       
         useAuthStore.getState().setUser(res.user);
         useAuthStore.getState().setToken(res.token);
 
-        toast.success("Login successful!");
-        router.push("/");
+        toast.success('Login successful!');
+        router.push('/');
       }
     } catch (err) {
       console.error('Login error:', err);
@@ -49,10 +60,6 @@ const token = useAuthStore((state)=>state.token);
       setIsLoading(false);
     }
   };
-
-  if (token) {
-    router.push('/')
-  }
 
   return (
     <section className="container flex items-center justify-center bg-[#111111] px-4 py-10">
@@ -82,8 +89,11 @@ const token = useAuthStore((state)=>state.token);
                 type="email"
                 {...register('email')}
                 placeholder="doctor@example.com"
-                className={`w-full pl-10 pr-3 py-3 bg-[#1a1a1a] border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${errors.email ? 'border-red-500 ring-red-400' : 'border-[#08392e] focus:ring-[#00c37a]/50'
-                  }`}
+                className={`w-full pl-10 pr-3 py-3 bg-[#1a1a1a] border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${
+                  errors.email
+                    ? 'border-red-500 ring-red-400'
+                    : 'border-[#08392e] focus:ring-[#00c37a]/50'
+                }`}
               />
             </div>
             {errors.email && (
@@ -103,12 +113,15 @@ const token = useAuthStore((state)=>state.token);
                 type={showPassword ? 'text' : 'password'}
                 {...register('password')}
                 placeholder="Enter your password"
-                className={`w-full pl-10 pr-10 py-3 bg-[#1a1a1a] border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${errors.password ? 'border-red-500 ring-red-400' : 'border-[#08392e] focus:ring-[#00c37a]/50'
-                  }`}
+                className={`w-full pl-10 pr-10 py-3 bg-[#1a1a1a] border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${
+                  errors.password
+                    ? 'border-red-500 ring-red-400'
+                    : 'border-[#08392e] focus:ring-[#00c37a]/50'
+                }`}
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(prev => !prev)}
+                onClick={() => setShowPassword((prev) => !prev)}
                 className="absolute right-3 top-3.5"
                 aria-label="Toggle password visibility"
               >
@@ -126,10 +139,10 @@ const token = useAuthStore((state)=>state.token);
 
           {/* Forgot Password */}
           <div className="flex justify-between items-center">
-
-            <div onClick={() => {
-              router.push("/forgotPassword")
-            }} className="text-xs cursor-pointer text-[#00c37a] hover:underline">
+            <div
+              onClick={() => router.push('/forgotPassword')}
+              className="text-xs cursor-pointer text-[#00c37a] hover:underline"
+            >
               Forgot Password?
             </div>
           </div>
@@ -138,8 +151,9 @@ const token = useAuthStore((state)=>state.token);
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full py-3 px-4 bg-gradient-to-r from-[#00c37a] to-[#00aa66] text-black font-semibold rounded-lg shadow-md transition-all duration-200 flex items-center justify-center ${isLoading ? 'opacity-60 cursor-not-allowed' : 'hover:shadow-lg'
-              }`}
+            className={`w-full py-3 px-4 bg-gradient-to-r from-[#00c37a] to-[#00aa66] text-black font-semibold rounded-lg shadow-md transition-all duration-200 flex items-center justify-center ${
+              isLoading ? 'opacity-60 cursor-not-allowed' : 'hover:shadow-lg'
+            }`}
           >
             {isLoading ? 'Logging in...' : 'Login to Dashboard'}
             <svg
@@ -148,7 +162,12 @@ const token = useAuthStore((state)=>state.token);
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7-7 7M3 12h18" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M14 5l7 7-7 7M3 12h18"
+              />
             </svg>
           </button>
 
@@ -175,7 +194,12 @@ const token = useAuthStore((state)=>state.token);
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             </a>
           </div>

@@ -1,12 +1,24 @@
-export const navLinks = [
+export const guestLinks = [
   { name: "Home", href: "/" },
   { name: "Find Doctors", href: "/Doctors" },
   { name: "Find Hospitals", href: "/Hospitals" },
   { name: "About", href: "/About" },
   { name: "Contact Us", href: "/Contact" },
   { name: "Terms and Conditions", href: "/TermsCondition" },
-  { name: "Dashboard", href: "/Dashboard" },
+];
 
+export const doctorLinks = [
+  { name: "Dashboard", href: "/Dashboard" },
+  { name: "Find Patients", href: "/Doctor/Patients" },
+  { name: "Appointments", href: "/Doctor/Appointments" },
+  { name: "Profile", href: "/profile" },
+];
+
+export const patientLinks = [
+  { name: "Dashboard", href: "/Dashboard" },
+  { name: "Find Doctors", href: "/Doctors" },
+  { name: "Find Hospitals", href: "/Hospitals" },
+  { name: "Appointments", href: "/appointment" },
 ];
 
 
@@ -227,20 +239,20 @@ export const teamMembers = [
     desc: 'Focused on server-side development, API structure, and database handling. Ensures performance and security behind the scenes.',
   },
 ];
- export const specialties = [
-    "Cardiology",
-    "Dermatology",
-    "Neurology",
-    "Pediatrics",
-    "Orthopedics",
-    "Ophthalmology",
-    "Gynecology",
-    "Psychiatry",
-  ];
+export const specialties = [
+  "Cardiology",
+  "Dermatology",
+  "Neurology",
+  "Pediatrics",
+  "Orthopedics",
+  "Ophthalmology",
+  "Gynecology",
+  "Psychiatry",
+];
 
-  export const hospitals = [
-    "City General Hospital",
-    "Metropolitan Medical Center",
-    "University Health System",
-    "Children's Specialty Clinic",
-  ];
+export const hospitals = [
+  "City General Hospital",
+  "Metropolitan Medical Center",
+  "University Health System",
+  "Children's Specialty Clinic",
+];

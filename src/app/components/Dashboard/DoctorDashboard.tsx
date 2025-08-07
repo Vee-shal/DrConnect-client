@@ -1,7 +1,16 @@
 "use client";
 import React from "react";
+interface DoctorDashboardProps {
+  user: {
+    name: string;
+    email: string;
+    specialization?: string;
+    
+  };
+  token: string;
 
-const DoctorDashboard = () => {
+}
+const DoctorDashboard = ({ user, token }: DoctorDashboardProps) => {
   return (
     <section className="min-h-screen bg-gray-950 text-gray-200 p-6 md:p-10">
       <h1 className="text-3xl md:text-4xl font-bold text-emerald-400 mb-6">
@@ -36,7 +45,7 @@ const DoctorDashboard = () => {
 
         {/* Appointments */}
         <div className="bg-gray-900 p-6 rounded-xl border border-emerald-600">
-          <h2 className="text-xl font-semibold mb-4">Today's Appointments</h2>
+          <h2 className="text-xl font-semibold mb-4">Todays Appointments</h2>
           <ul className="space-y-4">
             {["M.J. Mical", "Sanath Deo", "Loeara Phanj", "Komola Haris"].map(
               (name, i) => (

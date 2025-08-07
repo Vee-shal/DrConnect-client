@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -10,53 +9,23 @@ import { endpoints } from "@/app/lib/api/endpoints";
 import toast from "react-hot-toast";
 import { profileSchema } from "@/app/lib/validations/ProfileSchema";
 import { useAuthStore } from "@/app/lib/store/authStore";
+import DoctorProfileForm from "../../components/Profile/DoctorForm";
+import PatientProfileForm from "../../components/Profile/PatientForm";
 
 const Page = () => {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
-  const [token, setToken] = useState("");
+  const user = useAuthStore((state) => state.user);
+  const token = useAuthStore((state) => state.token);
+
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-const user = useAuthStore((state)=>state.user);
-const token = useAuthStore((state)=>state.token);
-
-
     if (!user || !token) {
       router.push("/Login");
-      return;
+    } else {
+      setMounted(true);
     }
-
-    setUser(user);
-    setToken(token);
-    setMounted(true);
-  }, [router]);
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(profileSchema),
-  });
-
-  const onSubmit = async (data: any) => {
-    try {
-      const res = await _makePostRequest(endpoints.PROFILE.UPDATE, {
-        ...data,
-        email: user.email,
-      });
-
-      if (res.status === 200) {
-        reset();
-        toast.success("Your profile was updated successfully");
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to update profile");
-    }
-  };
+  }, [router, user, token]);
 
   if (!mounted || !user) return null;
 
@@ -168,150 +137,33 @@ const token = useAuthStore((state)=>state.token);
           </div>
 
           <div className="flex flex-col justify-between space-y-8 bg-[#0f0f0f] p-6 rounded-xl border border-[#08392e]/40 shadow-md">
-            {user?.role === "doctor" && user?.verified ? (
-           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-
-  {/* Section Heading */}
-  <div className="border-b border-[#00c37a]/30 pb-3">
-    <h2 className="text-2xl font-semibold text-white tracking-wide">
-      Practice Information
-    </h2>
-    <p className="text-sm text-gray-400">
-      Update your clinic details and consultation fees.
-    </p>
-  </div>
-
-  {/* Clinic Name */}
-  <div className="space-y-2">
-    <label htmlFor="clinicName" className="text-sm text-white font-medium">
-      Clinic/Hospital Name
-    </label>
-    <input
-      id="clinicName"
-      type="text"
-      {...register("clinicName")}
-      placeholder="e.g. MedLife Clinic"
-      className="w-full  text-white placeholder-gray-500 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00c37a]"
-    />
-    {errors.clinicName && (
-      <p className="text-sm text-red-500">{errors.clinicName.message as string}</p>
-    )}
-  </div>
-
-  {/* Clinic Address */}
-  <div className="space-y-2">
-    <label htmlFor="clinicAddress" className="text-sm text-white font-medium">
-      Clinic Address
-    </label>
-    <input
-      id="clinicAddress"
-      type="text"
-      {...register("clinicAddress")}
-      placeholder="e.g. 123 MG Road, Udaipur"
-      className="w-full  text-white placeholder-gray-500 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00c37a]"
-    />
-    {errors.clinicAddress && (
-      <p className="text-sm text-red-500">{errors.clinicAddress.message as string}</p>
-    )}
-  </div>
-
-  {/* Fees Section */}
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-    {/* In-Person Fee */}
-    <div className="space-y-2">
-      <label htmlFor="offlinePrice" className="text-sm text-white font-medium">
-        In-Person Fee (₹)
-      </label>
-      <div className="relative">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">₹</span>
-        <input
-          id="offlinePrice"
-          type="number"
-          {...register("offlinePrice")}
-          placeholder="500"
-          className="w-full  text-white placeholder-gray-500 border border-gray-700 rounded-lg px-8 py-2 focus:outline-none focus:ring-2 focus:ring-[#00c37a]"
-        />
-      </div>
-      {errors.offlinePrice && (
-        <p className="text-sm text-red-500">{errors.offlinePrice.message as string}</p>
-      )}
-    </div>
-
-    {/* Online Fee */}
-    <div className="space-y-2">
-      <label htmlFor="onlinePrice" className="text-sm text-white font-medium">
-        Online Fee (₹/min)
-      </label>
-      <div className="relative">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">₹</span>
-        <input
-          id="onlinePrice"
-          type="number"
-          {...register("onlinePrice")}
-          placeholder="20"
-          className="w-full  text-white placeholder-gray-500 border border-gray-700 rounded-lg px-8 py-2 pr-12 focus:outline-none focus:ring-2 focus:ring-[#00c37a]"
-        />
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">/min</span>
-      </div>
-      {errors.onlinePrice && (
-        <p className="text-sm text-red-500">{errors.onlinePrice.message as string}</p>
-      )}
-    </div>
-  </div>
-
-  {/* Submit Button */}
-  <div className="pt-4">
-    <button
-      type="submit"
-      className="w-full py-3 rounded-lg bg-gradient-to-r from-[#00c37a] to-[#019764] text-black font-semibold hover:opacity-90 transition-all flex justify-center items-center gap-2"
-    >
-      Save Changes
-      <svg
-        className="w-4 h-4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        viewBox="0 0 24 24"
-      >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-      </svg>
-    </button>
-  </div>
-</form>
-
+            {user?.role === "doctor" ? (
+              user.verified ? (
+                <DoctorProfileForm />
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full text-center space-y-4 text-gray-400">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-12 h-12 text-[#00c37a]"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M13 16h-1v-4h-1m1-4h.01M12 18a6 6 0 100-12 6 6 0 000 12z"
+                    />
+                  </svg>
+                  <p className="text-sm">
+                    Your profile is under verification. Please wait to access
+                    clinic details.
+                  </p>
+                </div>
+              )
             ) : (
-              <div className="flex flex-col items-center justify-center h-full text-center space-y-4 text-gray-400">
-                {user?.role === "doctor" ? (
-                  <>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-12 h-12 text-[#00c37a]"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1.5}
-                        d="M13 16h-1v-4h-1m1-4h.01M12 18a6 6 0 100-12 6 6 0 000 12z"
-                      />
-                    </svg>
-                    <p className="text-sm">
-                      Your profile is under verification. Please wait to access
-                      clinic details.
-                    </p>
-                  </>
-                ) : (
-                  // 👇 This will show image if not doctor
-                  <img
-                    src="/Assets/Svg/Profile.svg"
-                    alt="Not available for patient"
-                    className="w-60 h-auto object-contain"
-                  />
-                )}
-              </div>
+              <PatientProfileForm />
             )}
           </div>
         </div>
@@ -321,4 +173,3 @@ const token = useAuthStore((state)=>state.token);
 };
 
 export default Page;
-

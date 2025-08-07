@@ -53,7 +53,7 @@ const AboutUs = () => {
           </div>
           <p className="text-gray-300 text-base">
             At DrConnect, our vision is to transform the way people access healthcare. We strive to create a platform where technology empowers patients, not complicates their journey. We believe that quality medical consultation should be available at your fingertips — regardless of where you live or what device you use. 
-            <div></div>
+            <br /><br />
             By combining intuitive user experience with reliable backend infrastructure, we’re building a healthcare experience that feels personal, safe, and effortless. We are committed to constantly evolving, learning from real patient needs, and enabling doctors to connect meaningfully with their patients — all through a secure and scalable system.
           </p>
         </div>

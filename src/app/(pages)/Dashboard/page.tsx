@@ -1,36 +1,27 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useRouter } from "next/navigation";
 import DoctorDashboard from "@/app/components/Dashboard/DoctorDashboard";
 import PatientDashboard from "@/app/components/Dashboard/PatientDashboard";
-import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/app/lib/store/authStore";
 
 const Dashboard = () => {
-  const [user, setUser] = useState<any>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { user, token, isHydrated } = useAuthStore();
+  if (!isHydrated) {
+    return <div className="text-center py-10">Loading state...</div>;
+  }
 
-  useEffect(() => {
-    const userString = localStorage.getItem("user");
-
-    if (userString) {
-      const parsedUser = JSON.parse(userString);
-      setUser(parsedUser);
-      setToken(parsedUser.token || null);
-      console.log("✅ User:", parsedUser);
-      setLoading(false);
-    } else {
-      console.log("❌ No user found in localStorage");
-      router.push("/Login"); // Redirect if not logged in
-    }
-  }, [router]);
-
-  if (loading) return <div className="text-center py-10">Loading dashboard...</div>;
+  if (!user || !token) {
+    console.log("❌ No user/token found in Zustand store");
+    router.push("/login"); 
+    return null;
+  }
 
   return (
     <div>
-      {user?.role === "doctor" ? (
+      {user.role === "doctor" ? (
         <DoctorDashboard user={user} token={token} />
       ) : (
         <PatientDashboard user={user} token={token} />

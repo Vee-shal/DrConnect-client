@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import DoctorCard from "@/app/components/Doctors/DoctorCard";
 import { doctorData, hospitals, specialties } from "@/app/utils/data";
 import {
@@ -9,8 +9,28 @@ import {
   FaHospital,
 } from "react-icons/fa";
 import { MdHealthAndSafety } from "react-icons/md";
+import { _makeGetRequest } from "@/app/lib/api/api";
+import { endpoints } from "@/app/lib/api/endpoints";
+import toast from "react-hot-toast";
+import CustomLoader from "@/app/components/Custom_UI/CustomLoader";
 
 export default function DoctorsPage() {
+  const [doctors, setDoctors] = useState([]);
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const res = await _makeGetRequest(endpoints.DOCTORS.LIST);
+        console.log("FULL RESPONSE:", res); // now we know it's a direct array
+        setDoctors(res || []);
+      } catch (err: any) {
+        toast.error(err?.message || "Failed to load doctors");
+      }
+    };
+
+    fetchDoctors();
+  }, []);
+
   return (
     <div className="container  px-4 py-8 bg-[#0d0d0d]  text-white">
       {/* Header */}
@@ -59,30 +79,27 @@ export default function DoctorsPage() {
             Available Physicians
           </h2>
         </div>
-        <div className="grid md:hidden grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {doctorData.slice(0, 3).map((doctor) => (
-            <DoctorCard
-              key={doctor.id}
-              name={doctor.name}
-              imageUrl={doctor.imageUrl}
-              description={doctor.description}
-              specialization={doctor.specialization}
-              rating={doctor.rating}
-            />
-          ))}
-        </div>
-        <div className="md:grid hidden grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {doctorData.map((doctor) => (
-            <DoctorCard
-              key={doctor.id}
-              name={doctor.name}
-              imageUrl={doctor.imageUrl}
-              description={doctor.description}
-              specialization={doctor.specialization}
-              rating={doctor.rating}
-            />
-          ))}
-        </div>
+
+        {/* Loader / Empty State */}
+        {doctors.length === 0 ? (
+          <CustomLoader />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {doctors.map((doc: any) => (
+              <DoctorCard
+                key={doc.id}
+                name={doc.user?.name}
+                specialization={doc.user?.specialization}
+                experience={doc.user?.experience}
+                clinicName={doc.clinicName}
+                clinicAddress={doc.clinicAddress}
+                onlinePrice={doc.onlinePrice}
+                offlinePrice={doc.offlinePrice}
+                imageUrl="/Assets/doctor-placeholder.png"
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Info Boxes */}
@@ -127,25 +144,23 @@ export default function DoctorsPage() {
 
       {/* CTA Section */}
       <div className="w-full flex justify-center">
-        <div  className="bg-gradient-to-r w-fit from-[#00573c] to-[#00281c] rounded-xl p-8 text-center text-white mb-12">
-          <h3 className="text-2xl font-bold mb-4">Need Help Finding a Doctor?</h3>
+        <div className="bg-gradient-to-r w-fit from-[#00573c] to-[#00281c] rounded-xl p-8 text-center text-white mb-12">
+          <h3 className="text-2xl font-bold mb-4">
+            Need Help Finding a Doctor?
+          </h3>
           <p className="mb-6 max-w-2xl mx-auto text-lg">
-            Our patient care coordinators can help you find the perfect specialist
-            for your needs.
+            Our patient care coordinators can help you find the perfect
+            specialist for your needs.
           </p>
-         <div className="flex items-center justify-center">
-           <div className="flex justify-center items-center bg-white rounded-lg">
-            <button className="bg-gradient-to-r from-[#00573c] to-[#00281c] bg-clip-text text-transparent font-bold px-6 py-3 rounded-lg hover:bg-gray-100 transition text-base sm:text-lg text-center">
-              Contact Our Support Team
-            </button>
+          <div className="flex items-center justify-center">
+            <div className="flex justify-center items-center bg-white rounded-lg">
+              <button className="bg-gradient-to-r from-[#00573c] to-[#00281c] bg-clip-text text-transparent font-bold px-6 py-3 rounded-lg hover:bg-gray-100 transition text-base sm:text-lg text-center">
+                Contact Our Support Team
+              </button>
+            </div>
           </div>
-         </div>
         </div>
       </div>
-
-
-
     </div>
-
   );
 }

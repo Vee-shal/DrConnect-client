@@ -8,5 +8,8 @@ export const endpoints = {
   },
   PROFILE  : {
     UPDATE : "/profile/update"
+  },
+  DOCTORS:{
+    LIST : "doctor/verified"
   }
 };

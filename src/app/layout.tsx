@@ -19,6 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 
+
 export default function RootLayout({ children, }: Readonly<{ children: React.ReactNode; }>) {
   const setIsHydrated = useAuthStore((state) => state.setIsHydrated);
   const isHydrated = useAuthStore((state) => state.isHydrated);
