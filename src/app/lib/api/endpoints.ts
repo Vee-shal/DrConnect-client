@@ -15,5 +15,6 @@ export const endpoints = {
   },
   APPOINTMENT :{
     REQUEST :"/appointment/request",
+    GET_APPOINTMENTS : "/appointment/all"
   }
 };

@@ -10,7 +10,7 @@ export const guestLinks = [
 export const doctorLinks = [
   { name: "Dashboard", href: "/Dashboard" },
   { name: "Find Patients", href: "/Doctor/Patients" },
-  { name: "Appointments", href: "/Doctor/Appointments" },
+  { name: "Appointments", href: "/appointment" },
   { name: "Profile", href: "/profile" },
 ];
 
