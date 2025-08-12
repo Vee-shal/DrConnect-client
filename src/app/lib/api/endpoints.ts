@@ -11,9 +11,9 @@ export const endpoints = {
     UPDATE_PATIENT: "/profile/update-patient",
   },
   DOCTORS:{
-    LIST : "doctor/verified"
+    LIST : "/doctor/verified"
   },
   APPOINTMENT :{
-    REQUEST :"appointment/request",
+    REQUEST :"/appointment/request",
   }
 };

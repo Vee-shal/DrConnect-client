@@ -2,9 +2,10 @@
 import { useRouter } from "next/navigation";
 import React, { useState } from 'react';
 import { useAuthStore } from "@/app/lib/store/authStore"; // Adjust path as per your project
-import AppointmentFormComponent from "../Appointment/appointment";
+import AppointmentFormComponent from "../Appointment/Appointment";
 
 interface DoctorCardProps {
+  userId:number,
   name: string;
   specialization: string;
   experience: number;
@@ -17,6 +18,7 @@ interface DoctorCardProps {
 }
 
 const DoctorCard = ({
+  userId,
   name,
   specialization,
   experience,
@@ -214,7 +216,7 @@ const DoctorCard = ({
             >
               ×
             </button>
-            <AppointmentFormComponent />
+            <AppointmentFormComponent patientId={user?.id} doctorId={userId}/>
           </div>
         </div>
       )}

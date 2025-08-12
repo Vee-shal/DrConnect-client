@@ -1,12 +1,14 @@
 'use client';
 
+import { _makePostRequest } from '@/app/lib/api/api';
+import { endpoints } from '@/app/lib/api/endpoints';
 import React, { useState } from 'react';
 
-const AppointmentFormComponent = () => {
+const AppointmentFormComponent = ({ patientId, doctorId }: { patientId: number | any, doctorId: number }) => {
   const [reason, setReason] = useState('');
   const [mode, setMode] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Validation
     if (!mode) {
@@ -18,13 +20,17 @@ const AppointmentFormComponent = () => {
       return;
     }
 
-    // TODO: send request to backend API with reason and mode
+    const res = _makePostRequest(endpoints.APPOINTMENT.REQUEST,{
+      patientId , doctorId , reason , mode
+    })
+    console.log("ressss" , res);
     console.log({ reason, mode });
 
     alert('Appointment request sent!');
     setReason('');
     setMode('');
   };
+
 
   return (
     <section className="container flex items-center justify-center bg-[#111] px-4 py-10">

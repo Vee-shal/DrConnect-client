@@ -88,6 +88,7 @@ export default function DoctorsPage() {
             {doctors.map((doc: any) => (
               <DoctorCard
                 key={doc.id}
+                userId = {doc.userId}
                 name={doc.user?.name}
                 specialization={doc.user?.specialization}
                 experience={doc.user?.experience}

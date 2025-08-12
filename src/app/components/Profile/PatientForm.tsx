@@ -30,6 +30,7 @@ const PatientProfileForm = () => {
       });
 
       if (res.status === 200) {
+        useAuthStore
         toast.success("Profile updated successfully");
         reset();
       }

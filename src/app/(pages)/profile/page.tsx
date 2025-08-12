@@ -100,22 +100,22 @@ const Page = () => {
               },
               ...(user?.role === "doctor"
                 ? [
-                    {
-                      label: "Specialization",
-                      value: user?.specialization,
-                      id: "specialization",
-                    },
-                    {
-                      label: "Years of Experience",
-                      value: user?.experience,
-                      id: "experience",
-                    },
-                    {
-                      label: "License Number",
-                      value: user?.license,
-                      id: "license",
-                    },
-                  ]
+                  {
+                    label: "Specialization",
+                    value: user?.specialization,
+                    id: "specialization",
+                  },
+                  {
+                    label: "Years of Experience",
+                    value: user?.experience,
+                    id: "experience",
+                  },
+                  {
+                    label: "License Number",
+                    value: user?.license,
+                    id: "license",
+                  },
+                ]
                 : []),
             ].map(({ label, value, id }) => (
               <div className="space-y-1" key={id}>
