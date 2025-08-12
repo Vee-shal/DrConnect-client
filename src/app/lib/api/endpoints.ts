@@ -7,9 +7,13 @@ export const endpoints = {
     RESET_PASSWORD: `/auth/reset-password`
   },
   PROFILE  : {
-    UPDATE : "/profile/update"
+    UPDATE_DOCTOR : "/profile/update-doctor",
+    UPDATE_PATIENT: "/profile/update-patient",
   },
   DOCTORS:{
     LIST : "doctor/verified"
+  },
+  APPOINTMENT :{
+    REQUEST :"appointment/request",
   }
 };

@@ -22,17 +22,17 @@ const PatientProfileForm = () => {
 
   const onSubmit = async (data: any) => {
     try {
-          console.log("Patient Data Submitted:", data);
+      console.log("Patient Data Submitted:", data);
 
-      // const res = await _makePostRequest(endpoints.PROFILE.UPDATE_PATIENT, {
-      //   ...data,
-      //   email: user.email,
-      // });
+      const res = await _makePostRequest(endpoints.PROFILE.UPDATE_PATIENT, {
+        ...data,
+        email: user?.email,
+      });
 
-      // if (res.status === 200) {
-      //   toast.success("Profile updated successfully");
-      //   reset();
-      // }
+      if (res.status === 200) {
+        toast.success("Profile updated successfully");
+        reset();
+      }
     } catch (err) {
       console.error(err);
       toast.error("Failed to update patient profile");

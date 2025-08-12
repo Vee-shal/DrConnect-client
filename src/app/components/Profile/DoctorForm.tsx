@@ -22,9 +22,9 @@ const DoctorFormComponent = () => {
 
   const onSubmit = async (data: any) => {
     try {
-      const res = await _makePostRequest(endpoints.PROFILE.UPDATE, {
+      const res = await _makePostRequest(endpoints.PROFILE. UPDATE_DOCTOR , {
         ...data,
-        email: user.email,
+        email: user?.email,
       });
 
       if (res.status === 200) {
