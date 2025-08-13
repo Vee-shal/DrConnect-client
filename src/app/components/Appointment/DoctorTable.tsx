@@ -3,8 +3,8 @@ import { _makeGetRequest } from "@/app/lib/api/api";
 import { endpoints } from "@/app/lib/api/endpoints";
 import { useAuthStore } from "@/app/lib/store/authStore";
 import React, { useEffect, useState } from "react";
-import { Calendar } from 'primereact/calendar';
-import { Dialog } from 'primereact/dialog';
+import { Calendar } from "primereact/calendar";
+import { Dialog } from "primereact/dialog";
 
 type Appointment = {
   id: number | string;
@@ -12,19 +12,21 @@ type Appointment = {
   time: string;
   mode: "Online" | "Offline";
   patientName: string;
-  status: "Pending" | "Accepted" | "Rejected" | "Completed";
+  status: "Accepted" | "Rejected" | "Completed";
   reason: string;
+  patient: { name: string } | null;
 };
 
 const DoctorTable = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const user = useAuthStore((state) => state.user);
   const [visible, setVisible] = useState(false);
-  const [currentAppointment, setCurrentAppointment] = useState<Appointment | null>(null);
+  const [currentAppointment, setCurrentAppointment] =
+    useState<Appointment | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [selectedHours, setSelectedHours] = useState('10');
-  const [selectedMinutes, setSelectedMinutes] = useState('00');
-  const [selectedStatus, setSelectedStatus] = useState('Pending');
+  const [selectedHours, setSelectedHours] = useState("10");
+  const [selectedMinutes, setSelectedMinutes] = useState("00");
+  const [selectedStatus, setSelectedStatus] = useState("Pending");
 
   const Status = ["All", "Pending", "Accepted", "Rejected", "Completed"];
   const Time = ["All", "Today", "Week", "Month"];
@@ -36,63 +38,73 @@ const DoctorTable = () => {
       const params = {
         doctorId: user?.id,
         status: activeStatus === "All" ? "" : activeStatus,
-        time: activeTime === "All" ? "" : activeTime
+        time: activeTime === "All" ? "" : activeTime,
       };
 
-      const res = await _makeGetRequest(endpoints.APPOINTMENT.GET_APPOINTMENTS, params);
-      
+      const res = await _makeGetRequest(
+        endpoints.APPOINTMENT.GET_APPOINTMENTS,
+        params
+      );
+
       // Normalize appointment data
       const normalizedAppointments = res.data.map((appt: any) => ({
         ...appt,
-        time: appt.time?.includes(':') ? appt.time : '10:00' // Default time if invalid
+        time: appt.time?.includes(":") ? appt.time : "10:00", // Default time if invalid
       }));
-      
+
       setAppointments(normalizedAppointments);
     } catch (error) {
-      console.error('Error fetching appointments:', error);
+      console.error("Error fetching appointments:", error);
     }
   };
 
-  useEffect(() => {
-    handleRequest();
-  }, [activeTime, activeStatus, user?.id]);
+useEffect(() => {
+  if (!user?.id) return; // doctorId ke bina mat chalana
+  handleRequest();
+}, [activeTime, activeStatus, user?.id]);
 
-  const hours = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
-  const minutes = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'));
+  const hours = Array.from({ length: 24 }, (_, i) =>
+    i.toString().padStart(2, "0")
+  );
+  const minutes = Array.from({ length: 60 }, (_, i) =>
+    i.toString().padStart(2, "0")
+  );
 
   const openEditModal = (appointment: Appointment) => {
     try {
       setCurrentAppointment(appointment);
       setSelectedDate(new Date(appointment.date));
-      
+
       // Safe time splitting with fallbacks
-      const timeParts = (appointment.time || '10:00').toString().split(':');
-      const hours = timeParts[0]?.padStart(2, '0') || '10';
-      const minutes = timeParts[1]?.padStart(2, '0') || '00';
-      
+      const timeParts = (appointment.time || "10:00").toString().split(":");
+      const hours = timeParts[0]?.padStart(2, "0") || "10";
+      const minutes = timeParts[1]?.padStart(2, "0") || "00";
+
       setSelectedHours(hours);
       setSelectedMinutes(minutes);
-      setSelectedStatus(appointment.status || 'Pending');
+      setSelectedStatus(appointment.status || "Pending");
       setVisible(true);
     } catch (error) {
-      console.error('Error opening edit modal:', error);
+      console.error("Error opening edit modal:", error);
       // Fallback values
-      setSelectedHours('10');
-      setSelectedMinutes('00');
-      setSelectedStatus('Pending');
+      setSelectedHours("10");
+      setSelectedMinutes("00");
+      setSelectedStatus("Pending");
       setVisible(true);
     }
   };
 
   const handleSave = () => {
     if (currentAppointment && selectedDate) {
-      const updatedAppointments = appointments.map(appt => 
-        appt.id === currentAppointment.id ? {
-          ...appt,
-          date: selectedDate.toISOString().split('T')[0],
-          time: `${selectedHours}:${selectedMinutes}`,
-          status: selectedStatus as Appointment['status']
-        } : appt
+      const updatedAppointments = appointments.map((appt) =>
+        appt.id === currentAppointment.id
+          ? {
+              ...appt,
+              date: selectedDate.toISOString().split("T")[0],
+              time: `${selectedHours}:${selectedMinutes}`,
+              status: selectedStatus as Appointment["status"],
+            }
+          : appt
       );
       setAppointments(updatedAppointments);
       setVisible(false);
@@ -101,25 +113,30 @@ const DoctorTable = () => {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'Pending': return "bg-yellow-900/50 text-yellow-300";
-      case 'Accepted': return "bg-blue-900/50 text-blue-300";
-      case 'Rejected': return "bg-red-900/50 text-red-300";
-      case 'Completed': return "bg-green-900/50 text-green-300";
-      default: return "bg-gray-900/50 text-gray-300";
+      case "Pending":
+        return "bg-yellow-900/50 text-yellow-300";
+      case "Accepted":
+        return "bg-blue-900/50 text-blue-300";
+      case "Rejected":
+        return "bg-red-900/50 text-red-300";
+      case "Completed":
+        return "bg-green-900/50 text-green-300";
+      default:
+        return "bg-gray-900/50 text-gray-300";
     }
   };
 
   const modalFooter = (
-    <div className="flex justify-end gap-2">
-      <button 
-        onClick={() => setVisible(false)} 
-        className="px-4 py-2 rounded-lg bg-[#333] hover:bg-[#444] text-white"
+    <div className="flex flex-col sm:flex-row justify-end items-center gap-4 my-5 pr-2">
+      <button
+        onClick={() => setVisible(false)}
+        className="w-full sm:w-auto px-6 py-3 rounded-lg bg-[#333] hover:bg-[#444] text-white transition-colors duration-200 ease-in-out shadow-md"
       >
         Cancel
       </button>
-      <button 
-        onClick={handleSave} 
-        className="px-4 py-2 rounded-lg bg-[#1ebc8b] hover:bg-[#18a77a] text-gray-900 font-medium"
+      <button
+        onClick={handleSave}
+        className="w-full sm:w-auto px-6 py-3 rounded-lg bg-[#1ebc8b] hover:bg-[#18a77a] text-gray-900 font-semibold transition-colors duration-200 ease-in-out shadow-md"
       >
         Save Changes
       </button>
@@ -132,9 +149,14 @@ const DoctorTable = () => {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h2 className="font-bold text-3xl">
-            Hello, <span className="text-[#1ebc8b] text-2xl">{user?.name || "Doctor"}</span>
+            Hello,{" "}
+            <span className="text-[#1ebc8b] text-2xl">
+              {user?.name || "Doctor"}
+            </span>
           </h2>
-          <p className="text-sm text-gray-400 mt-5">Your patient appointments</p>
+          <p className="text-sm text-gray-400 mt-5">
+            Your patient appointments
+          </p>
         </div>
       </div>
 
@@ -142,16 +164,19 @@ const DoctorTable = () => {
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-semibold text-gray-400 uppercase">Status</span>
+            <span className="text-xs font-semibold text-gray-400 uppercase">
+              Status
+            </span>
             <div className="flex flex-wrap gap-1">
               {Status.map((filter) => (
                 <button
                   key={filter}
                   onClick={() => setActiveStatus(filter)}
                   className={`px-3 py-1 text-xs font-medium rounded-full transition-all
-                    ${activeStatus === filter
-                      ? "bg-[#1ebc8b] text-gray-900"
-                      : "bg-[#222] text-gray-300 hover:bg-[#333]"
+                    ${
+                      activeStatus === filter
+                        ? "bg-[#1ebc8b] text-gray-900"
+                        : "bg-[#222] text-gray-300 hover:bg-[#333]"
                     }`}
                 >
                   {filter}
@@ -163,16 +188,19 @@ const DoctorTable = () => {
 
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-semibold text-gray-400 uppercase">Time</span>
+            <span className="text-xs font-semibold text-gray-400 uppercase">
+              Time
+            </span>
             <div className="flex flex-wrap gap-1">
               {Time.map((filter) => (
                 <button
                   key={filter}
                   onClick={() => setActiveTime(filter)}
                   className={`px-3 py-1 text-xs font-medium rounded-full transition-all
-                    ${activeTime === filter
-                      ? "bg-[#1ebc8b] text-gray-900"
-                      : "bg-[#222] text-gray-300 hover:bg-[#333]"
+                    ${
+                      activeTime === filter
+                        ? "bg-[#1ebc8b] text-gray-900"
+                        : "bg-[#222] text-gray-300 hover:bg-[#333]"
                     }`}
                 >
                   {filter}
@@ -188,7 +216,16 @@ const DoctorTable = () => {
         <table className="min-w-full border-collapse">
           <thead className="bg-[#1ebc8b]/10 backdrop-blur-sm">
             <tr>
-              {["Appointment ID", "Patient", "Date", "Time", "Mode", "Status", "Actions"].map((header) => (
+              {[
+                "ID",
+                "Patient",
+                "Reason",
+                "Date",
+                "Time",
+                "Mode",
+                "Status",
+                "Actions",
+              ].map((header) => (
                 <th
                   key={header}
                   className="border-b border-[#1ebc8b]/30 px-6 py-3 text-left text-xs font-semibold text-[#1ebc8b] uppercase tracking-wider"
@@ -209,7 +246,10 @@ const DoctorTable = () => {
                     #{appt.id}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                    {appt.patientName || "Not Available"}
+                    {appt.patient?.name || "Not Available"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                    {appt.reason || "Not Available"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
                     {appt.date || "Not Available"}
@@ -230,9 +270,9 @@ const DoctorTable = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
-                      className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        getStatusBadge(appt.status)
-                      }`}
+                      className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(
+                        appt.status
+                      )}`}
                     >
                       {appt.status}
                     </span>
@@ -249,7 +289,10 @@ const DoctorTable = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={7} className="px-6 py-4 text-center text-sm text-gray-400">
+                <td
+                  colSpan={7}
+                  className="px-6 py-4 text-center text-sm text-gray-400"
+                >
                   You have no appointments for this filter
                 </td>
               </tr>
@@ -270,7 +313,11 @@ const DoctorTable = () => {
                 <h3 className="font-medium text-[#1ebc8b] capitalize">
                   {appt.patientName || "Unknown Patient"}
                 </h3>
-                <span className={`px-2 py-1 text-xs rounded-full ${getStatusBadge(appt.status)}`}>
+                <span
+                  className={`px-2 py-1 text-xs rounded-full ${getStatusBadge(
+                    appt.status
+                  )}`}
+                >
                   {appt.status}
                 </span>
               </div>
@@ -286,11 +333,13 @@ const DoctorTable = () => {
                 </div>
                 <div>
                   <p className="text-gray-400">Mode</p>
-                  <span className={`text-xs px-2 py-1 rounded-full ${
-                    appt.mode === "Online" 
-                      ? "bg-blue-900/50 text-blue-300" 
-                      : "bg-purple-900/50 text-purple-300"
-                  }`}>
+                  <span
+                    className={`text-xs px-2 py-1 rounded-full ${
+                      appt.mode === "Online"
+                        ? "bg-blue-900/50 text-blue-300"
+                        : "bg-purple-900/50 text-purple-300"
+                    }`}
+                  >
                     {appt.mode}
                   </span>
                 </div>
@@ -317,69 +366,83 @@ const DoctorTable = () => {
       </div>
 
       {/* Edit Modal */}
-      <Dialog 
-        visible={visible} 
-        onHide={() => setVisible(false)} 
+      <Dialog
+        visible={visible}
+        onHide={() => setVisible(false)}
         footer={modalFooter}
-        className="bg-[#222] border border-[#1ebc8b]/30 rounded-lg shadow-2xl"
-        contentClassName="backdrop-blur-sm bg-[#111]/90 p-6"
-        headerClassName="border-b border-[#1ebc8b]/30 p-6"
+        className="bg-[#222] border border-[#1ebc8b]/40 rounded-lg shadow-xl max-w-sm w-full sm:max-w-md"
+        contentClassName="backdrop-blur-sm bg-[#111]/95 p-4 sm:p-6 max-h-[60vh] overflow-y-auto"
+        headerClassName="border-b border-[#1ebc8b]/40 p-3 sm:p-4"
         header={
-          <h3 className="text-xl font-semibold text-[#1ebc8b]">
+          <h3 className="text-lg sm:text-xl font-semibold text-[#1ebc8b] tracking-wide truncate">
             Edit Appointment {currentAppointment?.patientName}
           </h3>
         }
       >
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Date Field */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-300">Date</label>
+          <div className="space-y-1 sm:space-y-2">
+            <label className="block text-xs sm:text-sm font-semibold text-gray-300 tracking-wide">
+              Date
+            </label>
             <Calendar
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.value as Date)}
               dateFormat="yy-mm-dd"
-              className="w-full bg-[#333] border border-[#1ebc8b]/30 text-white rounded-lg py-2 pl-3 pr-10"
-              panelClassName="bg-[#333] border border-[#1ebc8b]/30 shadow-lg"
+              className="w-full bg-[#333] border border-[#1ebc8b]/40 text-white rounded-md py-1.5 px-2 pr-10 text-sm sm:text-base transition focus:outline-none focus:ring-2 focus:ring-[#1ebc8b]"
+              panelClassName="bg-[#333] border border-[#1ebc8b]/40 shadow-lg rounded-md"
               showIcon
             />
           </div>
-          
+
           {/* Time Field */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-300">Time (24-hour format)</label>
-            <div className="flex items-center gap-3">
+          <div className="space-y-1 sm:space-y-2">
+            <label className="block text-xs sm:text-sm font-semibold text-gray-300 tracking-wide">
+              Time (24-hour format)
+            </label>
+            <div className="flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-4">
               <select
                 value={selectedHours}
                 onChange={(e) => setSelectedHours(e.target.value)}
-                className="flex-1 bg-[#333] border border-[#1ebc8b]/30 text-white rounded-lg px-4 py-2"
+                className="w-full sm:flex-1 bg-[#333] border border-[#1ebc8b]/40 text-white rounded-md px-3 py-1.5 text-sm sm:text-base transition focus:outline-none focus:ring-2 focus:ring-[#1ebc8b]"
               >
-                {hours.map(hour => (
-                  <option key={hour} value={hour}>{hour}</option>
+                {hours.map((hour) => (
+                  <option key={hour} value={hour}>
+                    {hour}
+                  </option>
                 ))}
               </select>
-              <span className="text-gray-300">:</span>
+              <span className="text-gray-300 text-base sm:text-lg select-none hidden sm:block">
+                :
+              </span>
               <select
                 value={selectedMinutes}
                 onChange={(e) => setSelectedMinutes(e.target.value)}
-                className="flex-1 bg-[#333] border border-[#1ebc8b]/30 text-white rounded-lg px-4 py-2"
+                className="w-full sm:flex-1 bg-[#333] border border-[#1ebc8b]/40 text-white rounded-md px-3 py-1.5 text-sm sm:text-base transition focus:outline-none focus:ring-2 focus:ring-[#1ebc8b]"
               >
-                {minutes.map(minute => (
-                  <option key={minute} value={minute}>{minute}</option>
+                {minutes.map((minute) => (
+                  <option key={minute} value={minute}>
+                    {minute}
+                  </option>
                 ))}
               </select>
             </div>
           </div>
-          
+
           {/* Status Field */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-300">Status</label>
+          <div className="space-y-1 sm:space-y-2">
+            <label className="block text-xs sm:text-sm font-semibold text-gray-300 tracking-wide">
+              Status
+            </label>
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="w-full bg-[#333] border border-[#1ebc8b]/30 text-white rounded-lg px-4 py-2"
+              className="w-full bg-[#333] border border-[#1ebc8b]/40 text-white rounded-md px-3 py-1.5 text-sm sm:text-base transition focus:outline-none focus:ring-2 focus:ring-[#1ebc8b]"
             >
-              {Status.filter(s => s !== "All").map(status => (
-                <option key={status} value={status}>{status}</option>
+              {Status.filter((s) => s !== "All").map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
               ))}
             </select>
           </div>

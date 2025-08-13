@@ -1,36 +1,44 @@
-'use client';
+"use client";
 
-import { _makePostRequest } from '@/app/lib/api/api';
-import { endpoints } from '@/app/lib/api/endpoints';
-import React, { useState } from 'react';
+import { _makePostRequest } from "@/app/lib/api/api";
+import { endpoints } from "@/app/lib/api/endpoints";
+import React, { useState } from "react";
 
-const AppointmentFormComponent = ({ patientId, doctorId }: { patientId: number | any, doctorId: number }) => {
-  const [reason, setReason] = useState('');
-  const [mode, setMode] = useState('');
+const AppointmentFormComponent = ({
+  patientId,
+  doctorId,
+}: {
+  patientId: number | any;
+  doctorId: number;
+}) => {
+  const [reason, setReason] = useState("");
+  const [mode, setMode] = useState("");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Validation
     if (!mode) {
-      alert('Please select consultation mode');
+      alert("Please select consultation mode");
       return;
     }
     if (!reason.trim()) {
-      alert('Please enter reason for appointment');
+      alert("Please enter reason for appointment");
       return;
     }
 
-    const res = _makePostRequest(endpoints.APPOINTMENT.REQUEST,{
-      patientId , doctorId , reason , mode
-    })
-    console.log("ressss" , res);
+    const res = _makePostRequest(endpoints.APPOINTMENT.REQUEST, {
+      patientId,
+      doctorId,
+      reason,
+      mode,
+    });
+    console.log("ressss", res);
     console.log({ reason, mode });
 
-    alert('Appointment request sent!');
-    setReason('');
-    setMode('');
+    alert("Appointment request sent!");
+    setReason("");
+    setMode("");
   };
-
 
   return (
     <section className="container flex items-center justify-center bg-[#111] px-4 py-10">
@@ -38,14 +46,21 @@ const AppointmentFormComponent = ({ patientId, doctorId }: { patientId: number |
         {/* Heading */}
         <div className="text-center space-y-3">
           <h2 className="text-3xl font-bold text-white">Book an Appointment</h2>
-          <p className="text-[#00c37a] text-sm">Please fill out the details to schedule your visit</p>
+          <p className="text-[#00c37a] text-sm">
+            Please fill out the details to schedule your visit
+          </p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Mode of Consultation */}
           <div className="space-y-1">
-            <label htmlFor="mode" className="block text-sm font-medium text-gray-300">Consultation Mode</label>
+            <label
+              htmlFor="mode"
+              className="block text-sm font-medium text-gray-300"
+            >
+              Consultation Mode
+            </label>
             <select
               id="mode"
               value={mode}
@@ -60,7 +75,12 @@ const AppointmentFormComponent = ({ patientId, doctorId }: { patientId: number |
 
           {/* Reason for Visit */}
           <div className="space-y-1">
-            <label htmlFor="reason" className="block text-sm font-medium text-gray-300">Symptoms / Reason</label>
+            <label
+              htmlFor="reason"
+              className="block text-sm font-medium text-gray-300"
+            >
+              Symptoms / Reason
+            </label>
             <textarea
               id="reason"
               rows={4}
