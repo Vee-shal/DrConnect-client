@@ -12,6 +12,7 @@ type User = {
   experience: string;
   license: string;
   verified : boolean;
+   profilePhoto?: string; 
 };
 
 type AuthStore = {

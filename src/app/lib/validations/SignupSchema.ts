@@ -31,6 +31,12 @@ export const doctorSchema = yup.object().shape({
       then: (schema) => schema.required("Experience is required"),
       otherwise: (schema) => schema.notRequired(),
     }),
+     certificate: yup
+    .mixed()
+    .required("Certificate is required")
+    .test("fileSize", "File size is too large", (value : any) => {
+      return value && value[0] && value[0].size <= 5 * 1024 * 1024; // 5MB
+    }),
 
   license: yup.string().when("role", {
     is: "doctor",

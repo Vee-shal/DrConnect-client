@@ -13,9 +13,12 @@ import {
   FaUser,
 } from "react-icons/fa";
 import { MdWork, MdHealthAndSafety } from "react-icons/md";
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { doctorSchema, patientSchema, } from "@/app/lib/validations/SignupSchema";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import {
+  doctorSchema,
+  patientSchema,
+} from "@/app/lib/validations/SignupSchema";
 import { _makePostRequest } from "@/app/lib/api/api";
 import { endpoints } from "@/app/lib/api/endpoints";
 import toast from "react-hot-toast";
@@ -31,7 +34,8 @@ type SignupFormInputs = {
   specialization?: string;
   experience?: number;
   license?: string;
-}
+  certificate?: FileList | null;
+};
 const SignUpForm = () => {
   const [role, setRole] = useState<Role>("doctor");
   const {
@@ -43,51 +47,51 @@ const SignUpForm = () => {
   } = useForm<SignupFormInputs>({
     resolver: yupResolver(role === "doctor" ? doctorSchema : patientSchema),
     defaultValues: {
-      role: role
-    }
-  })
-
+      role: role,
+    },
+  });
 
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const onSubmit = async (data: SignupFormInputs) => {
+ const onSubmit = async (data: SignupFormInputs) => {
+  try {
+    const formData = new FormData();
 
-    const { name, phone_number, email, password, role, specialization, experience, license, } = data;
+    // Common fields
+    formData.append("name", data.name);
+    formData.append("phone_number", data.phone_number);
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    formData.append("role", data.role);
+    formData.append("verified", "false");
 
+    if (data.role === "doctor") {
+      formData.append("specialization", data.specialization || "");
+      formData.append("experience", String(data.experience || ""));
+      formData.append("license", data.license || "");
 
-    const payload = role === "doctor" ? {
-      name,
-      phone_number,
-      email,
-      password,
-      role,
-      specialization,
-      experience,
-      license,
-
-    } : {
-      name,
-      phone_number,
-      email,
-      password,
-      role,
-
-    };
-    try {
-      const res = await _makePostRequest(endpoints.AUTH.REGISTER, {
-        ...payload, verified: false
-      });
-      console.log("res===>", res)
-      if (res?.token && res?.user) {
-        useAuthStore.getState().setUser(res.user);
-        useAuthStore.getState().setToken(res.token);
-        toast.success("Registration successful!");
-        router.push("/profile");
+      // Certificate file (agar select kiya h to)
+      if (data.certificate && data.certificate[0]) {
+        formData.append("certificate", data.certificate[0]);
       }
-    } catch (error) {
-      toast.error("Something went wrong. Please try again.");
     }
+
+    const res = await _makePostRequest(endpoints.AUTH.REGISTER, formData)
+
+
+    console.log("res===>", res);
+
+    if (res?.token && res?.user) {
+      useAuthStore.getState().setUser(res.user);
+      useAuthStore.getState().setToken(res.token);
+      toast.success("Registration successful!");
+      router.push("/profile");
+    }
+  } catch (error) {
+    toast.error("Something went wrong. Please try again.");
   }
+};
+
 
   return (
     <section className="bg-[#0a0a0a] text-white py-10 px-4 sm:px-6 lg:px-8 container">
@@ -108,31 +112,32 @@ const SignUpForm = () => {
           <div className="flex gap-4 justify-center">
             <button
               onClick={() => {
-                setValue("role", "doctor")
-                setRole("doctor")
+                setValue("role", "doctor");
+                setRole("doctor");
               }}
-              className={`px-4 py-2 rounded-full font-semibold transition ${role === "doctor"
-                ? "bg-[#00c37a] text-black"
-                : "bg-gray-800 text-white border border-[#00c37a]/30"
-                }`}
+              className={`px-4 py-2 rounded-full font-semibold transition ${
+                role === "doctor"
+                  ? "bg-[#00c37a] text-black"
+                  : "bg-gray-800 text-white border border-[#00c37a]/30"
+              }`}
             >
               Doctor
             </button>
             <button
               onClick={() => {
-                setValue("role", "user")
-                setRole("user")
+                setValue("role", "user");
+                setRole("user");
               }}
-              className={`px-4 py-2 rounded-full font-semibold transition ${role === "user"
-                ? "bg-[#00c37a] text-black"
-                : "bg-gray-800 text-white border border-[#00c37a]/30"
-                }`}
+              className={`px-4 py-2 rounded-full font-semibold transition ${
+                role === "user"
+                  ? "bg-[#00c37a] text-black"
+                  : "bg-gray-800 text-white border border-[#00c37a]/30"
+              }`}
             >
               Patient
             </button>
           </div>
         </div>
-
 
         <div className="bg-[#111]/60 backdrop-blur-xl border border-[#08392e] rounded-2xl shadow-md overflow-hidden">
           <div className="flex flex-col lg:flex-row">
@@ -158,36 +163,48 @@ const SignUpForm = () => {
 
             {/* Right Form Panel */}
             <div className="w-full p-4 sm:p-6 lg:p-8">
-
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 text-sm">
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="space-y-5 text-sm"
+              >
                 {/* Full Name */}
                 <div>
                   <label className="block mb-1 text-gray-300">Full Name</label>
                   <div className="flex items-center bg-[#1a1a1a] border border-[#08392e] rounded-md px-2 py-1.5 relative">
                     <FaUser />
                     <input
-                      {...register('name')}
+                      {...register("name")}
                       type="text"
                       placeholder="Full Name"
                       className="bg-transparent w-full outline-none text-white placeholder-gray-500 text-sm ml-2"
                     />
                   </div>
-                  {errors.name && <p className="text-red-500 text-xs">{errors.name.message}</p>}
+                  {errors.name && (
+                    <p className="text-red-500 text-xs">
+                      {errors.name.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Mobile Number */}
                 <div>
-                  <label className="block mb-1 text-gray-300">Mobile Number</label>
+                  <label className="block mb-1 text-gray-300">
+                    Mobile Number
+                  </label>
                   <div className="flex items-center bg-[#1a1a1a] border border-[#08392e] rounded-md px-2 py-1.5 relative">
                     <FaPhone />
                     <input
-                      {...register('phone_number')}
+                      {...register("phone_number")}
                       type="text"
                       placeholder="Mobile Number"
                       className="bg-transparent w-full outline-none text-white placeholder-gray-500 text-sm ml-2"
                     />
                   </div>
-                  {errors.phone_number && <p className="text-red-500 text-xs">{errors.phone_number.message}</p>}
+                  {errors.phone_number && (
+                    <p className="text-red-500 text-xs">
+                      {errors.phone_number.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Email */}
@@ -196,13 +213,17 @@ const SignUpForm = () => {
                   <div className="flex items-center bg-[#1a1a1a] border border-[#08392e] rounded-md px-2 py-1.5 relative">
                     <FaEnvelope />
                     <input
-                      {...register('email')}
+                      {...register("email")}
                       type="email"
                       placeholder="Email"
                       className="bg-transparent w-full outline-none text-white placeholder-gray-500 text-sm ml-2"
                     />
                   </div>
-                  {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
+                  {errors.email && (
+                    <p className="text-red-500 text-xs">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Password */}
@@ -211,8 +232,8 @@ const SignUpForm = () => {
                   <div className="flex items-center bg-[#1a1a1a] border border-[#08392e] rounded-md px-2 py-1.5 relative">
                     <FaLock />
                     <input
-                      {...register('password')}
-                      type={showPassword ? 'text' : 'password'}
+                      {...register("password")}
+                      type={showPassword ? "text" : "password"}
                       placeholder="Password"
                       className="bg-transparent w-full outline-none text-white placeholder-gray-500 text-sm ml-2"
                     />
@@ -223,58 +244,101 @@ const SignUpForm = () => {
                       {showPassword ? <FaEyeSlash /> : <FaEye />}
                     </span>
                   </div>
-                  {errors.password && <p className="text-red-500 text-xs">{errors.password.message}</p>}
+                  {errors.password && (
+                    <p className="text-red-500 text-xs">
+                      {errors.password.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Doctor Only Fields */}
-                {role === 'doctor' && (
+                {role === "doctor" && (
                   <>
                     {/* Specialization */}
                     <div>
-                      <label className="block mb-1 text-gray-300">Specialization</label>
+                      <label className="block mb-1 text-gray-300">
+                        Specialization
+                      </label>
                       <div className="flex items-center bg-[#1a1a1a] border border-[#08392e] rounded-md px-2 py-1.5">
                         <FaAward />
                         <input
-                          {...register('specialization')}
+                          {...register("specialization")}
                           type="text"
                           placeholder="Specialization"
                           className="bg-transparent w-full outline-none text-white placeholder-gray-500 text-sm ml-2"
                         />
                       </div>
-                      {errors.specialization && <p className="text-red-500 text-xs">{errors.specialization.message}</p>}
+                      {errors.specialization && (
+                        <p className="text-red-500 text-xs">
+                          {errors.specialization.message}
+                        </p>
+                      )}
                     </div>
 
                     {/* Experience */}
                     <div>
-                      <label className="block mb-1 text-gray-300">Experience (Years)</label>
+                      <label className="block mb-1 text-gray-300">
+                        Experience (Years)
+                      </label>
                       <div className="flex items-center bg-[#1a1a1a] border border-[#08392e] rounded-md px-2 py-1.5">
                         <MdWork />
                         <input
-                          {...register('experience', { valueAsNumber: true })}
+                          {...register("experience", { valueAsNumber: true })}
                           type="number"
                           placeholder="Experience"
                           className="bg-transparent w-full outline-none text-white placeholder-gray-500 text-sm ml-2"
                         />
                       </div>
-                      {errors.experience && <p className="text-red-500 text-xs">{errors.experience.message}</p>}
+                      {errors.experience && (
+                        <p className="text-red-500 text-xs">
+                          {errors.experience.message}
+                        </p>
+                      )}
                     </div>
 
                     {/* License */}
                     <div>
-                      <label className="block mb-1 text-gray-300">License No.</label>
+                      <label className="block mb-1 text-gray-300">
+                        License No.
+                      </label>
                       <div className="flex items-center bg-[#1a1a1a] border border-[#08392e] rounded-md px-2 py-1.5">
                         <FaIdCard />
                         <input
-                          {...register('license')}
+                          {...register("license")}
                           type="text"
                           placeholder="License No."
                           className="bg-transparent w-full outline-none text-white placeholder-gray-500 text-sm ml-2"
                         />
                       </div>
-                      {errors.license && <p className="text-red-500 text-xs">{errors.license.message}</p>}
+                      {errors.license && (
+                        <p className="text-red-500 text-xs">
+                          {errors.license.message}
+                        </p>
+                      )}
                     </div>
 
-
+                    {/* Certificate Upload */}
+                    <div>
+                      <label className="block mb-1 text-gray-300">
+                        Upload Certificate
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*,application/pdf"
+                        {...register("certificate")}
+                        className="block w-full text-sm text-gray-400
+                   file:mr-4 file:py-2 file:px-4
+                   file:rounded-md file:border-0
+                   file:text-sm file:font-semibold
+                   file:bg-[#00c37a]/20 file:text-[#00c37a]
+                   hover:file:bg-[#00c37a]/30"
+                      />
+                      {errors.certificate && (
+                        <p className="text-red-500 text-xs">
+                          {errors.certificate.message}
+                        </p>
+                      )}
+                    </div>
                   </>
                 )}
 
@@ -283,10 +347,11 @@ const SignUpForm = () => {
                   type="submit"
                   className="w-full bg-[#00c37a] text-black font-semibold py-2.5 rounded-md hover:bg-[#00aa66] transition text-sm"
                 >
-                  {role === 'doctor' ? 'Register as Doctor' : 'Register as Patient'}
+                  {role === "doctor"
+                    ? "Register as Doctor"
+                    : "Register as Patient"}
                 </button>
               </form>
-
             </div>
           </div>
         </div>

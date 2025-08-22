@@ -11,6 +11,7 @@ import { profileSchema } from "@/app/lib/validations/ProfileSchema";
 import { useAuthStore } from "@/app/lib/store/authStore";
 import DoctorProfileForm from "../../components/Profile/DoctorForm";
 import PatientProfileForm from "../../components/Profile/PatientForm";
+import ProfilePhoto from "@/app/components/Profile/profilephoto";
 
 const Page = () => {
   const router = useRouter();
@@ -52,32 +53,9 @@ const Page = () => {
           </div>
         )}
 
-        <div className="text-center space-y-4">
-          <div className="flex justify-center">
-            <div className="p-4 bg-[#00c37a]/10 border border-[#00c37a]/20 rounded-full">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-10 w-10 text-[#00c37a]"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
-            </div>
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-white">Account Profile</h2>
-            <p className="text-[#00c37a] text-sm mt-1">
-              Manage your professional information and settings
-            </p>
-          </div>
-        </div>
+
+        {/* Profile Photo and Title */}
+        <ProfilePhoto />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-white">
           {/* LEFT SIDE: Personal Info */}
@@ -100,22 +78,22 @@ const Page = () => {
               },
               ...(user?.role === "doctor"
                 ? [
-                  {
-                    label: "Specialization",
-                    value: user?.specialization,
-                    id: "specialization",
-                  },
-                  {
-                    label: "Years of Experience",
-                    value: user?.experience,
-                    id: "experience",
-                  },
-                  {
-                    label: "License Number",
-                    value: user?.license,
-                    id: "license",
-                  },
-                ]
+                    {
+                      label: "Specialization",
+                      value: user?.specialization,
+                      id: "specialization",
+                    },
+                    {
+                      label: "Years of Experience",
+                      value: user?.experience,
+                      id: "experience",
+                    },
+                    {
+                      label: "License Number",
+                      value: user?.license,
+                      id: "license",
+                    },
+                  ]
                 : []),
             ].map(({ label, value, id }) => (
               <div className="space-y-1" key={id}>

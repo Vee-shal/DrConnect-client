@@ -25,11 +25,13 @@ const DoctorTable = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const user = useAuthStore((state) => state.user);
   const [visible, setVisible] = useState(false);
-  const [currentAppointment, setCurrentAppointment] = useState<Appointment | null>(null);
+  const [currentAppointment, setCurrentAppointment] =
+    useState<Appointment | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedHours, setSelectedHours] = useState("10");
   const [selectedMinutes, setSelectedMinutes] = useState("00");
-  const [selectedStatus, setSelectedStatus] = useState<Appointment["status"]>("Pending");
+  const [selectedStatus, setSelectedStatus] =
+    useState<Appointment["status"]>("Pending");
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const toast = React.useRef<Toast>(null);
@@ -39,7 +41,11 @@ const DoctorTable = () => {
   const [activeStatus, setActiveStatus] = useState("All");
   const [activeTime, setActiveTime] = useState("All");
 
-  const showToast = (severity: 'success' | 'error', summary: string, detail: string) => {
+  const showToast = (
+    severity: "success" | "error",
+    summary: string,
+    detail: string
+  ) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
 
@@ -65,7 +71,7 @@ const DoctorTable = () => {
       setAppointments(normalizedAppointments);
     } catch (error) {
       console.error("Error fetching appointments:", error);
-      showToast('error', 'Error', 'Failed to fetch appointments');
+      showToast("error", "Error", "Failed to fetch appointments");
     } finally {
       setIsLoading(false);
     }
@@ -76,13 +82,21 @@ const DoctorTable = () => {
     handleRequest();
   }, [activeTime, activeStatus, user?.id]);
 
-  const hours = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, "0"));
-  const minutes = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, "0"));
+  const hours = Array.from({ length: 24 }, (_, i) =>
+    i.toString().padStart(2, "0")
+  );
+  const minutes = Array.from({ length: 60 }, (_, i) =>
+    i.toString().padStart(2, "0")
+  );
 
   const openEditModal = (appointment: Appointment) => {
     try {
       setCurrentAppointment(appointment);
-      setSelectedDate(new Date(appointment.date));
+
+      const validDate = appointment.date
+        ? new Date(appointment.date)
+        : new Date();
+      setSelectedDate(validDate);
 
       const timeParts = (appointment.time || "10:00").toString().split(":");
       const hours = timeParts[0]?.padStart(2, "0") || "10";
@@ -90,20 +104,20 @@ const DoctorTable = () => {
 
       setSelectedHours(hours);
       setSelectedMinutes(minutes);
-      setSelectedStatus(appointment.status || "Pending");
+
       setVisible(true);
     } catch (error) {
       console.error("Error opening edit modal:", error);
+      setSelectedDate(new Date());
       setSelectedHours("10");
       setSelectedMinutes("00");
-      setSelectedStatus("Pending");
       setVisible(true);
     }
   };
 
   const handleSave = async () => {
     if (!currentAppointment || !selectedDate || !user?.email) {
-      showToast('error', 'Error', 'Missing required information');
+      showToast("error", "Error", "Missing required information");
       return;
     }
 
@@ -111,12 +125,14 @@ const DoctorTable = () => {
 
     try {
       const payload = {
-        scheduledAt: `${selectedDate.toISOString().split('T')[0]}T${selectedHours}:${selectedMinutes}:00.000Z`,
+        scheduledAt: `${
+          selectedDate.toISOString().split("T")[0]
+        }T${selectedHours}:${selectedMinutes}:00.000Z`,
         appointmentId: currentAppointment.id,
         status: selectedStatus,
         doctorEmail: user.email,
-        patientEmail: currentAppointment.patient?.email || '',
-        mode: currentAppointment.mode
+        patientEmail: currentAppointment.patient?.email || "",
+        mode: currentAppointment.mode,
       };
 
       const response = await _makePostRequest(
@@ -131,20 +147,20 @@ const DoctorTable = () => {
       const updatedAppointments = appointments.map((appt) =>
         appt.id === currentAppointment.id
           ? {
-            ...appt,
-            date: selectedDate.toISOString().split('T')[0],
-            time: `${selectedHours}:${selectedMinutes}`,
-            status: selectedStatus,
-          }
+              ...appt,
+              date: selectedDate.toISOString().split("T")[0],
+              time: `${selectedHours}:${selectedMinutes}`,
+              status: selectedStatus,
+            }
           : appt
       );
 
       setAppointments(updatedAppointments);
       setVisible(false);
-      showToast('success', 'Success', 'Appointment updated successfully');
+      showToast("success", "Success", "Appointment updated successfully");
     } catch (error) {
       console.error("Error updating appointment:", error);
-      showToast('error', 'Error', 'Failed to update appointment');
+      showToast("error", "Error", "Failed to update appointment");
     } finally {
       setIsSaving(false);
     }
@@ -177,14 +193,31 @@ const DoctorTable = () => {
       <button
         onClick={handleSave}
         disabled={isSaving}
-        className={`w-full sm:w-auto px-6 py-3 rounded-lg ${isSaving ? 'bg-[#1ebc8b]/70' : 'bg-[#1ebc8b] hover:bg-[#18a77a]'
-          } text-gray-900 font-semibold transition-colors duration-200 ease-in-out shadow-md disabled:opacity-70 flex items-center justify-center`}
+        className={`w-full sm:w-auto px-6 py-3 rounded-lg ${
+          isSaving ? "bg-[#1ebc8b]/70" : "bg-[#1ebc8b] hover:bg-[#18a77a]"
+        } text-gray-900 font-semibold transition-colors duration-200 ease-in-out shadow-md disabled:opacity-70 flex items-center justify-center`}
       >
         {isSaving ? (
           <>
-            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <svg
+              className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-900"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
             </svg>
             Saving...
           </>
@@ -227,9 +260,10 @@ const DoctorTable = () => {
                   key={filter}
                   onClick={() => setActiveStatus(filter)}
                   className={`px-3 py-1 text-xs font-medium rounded-full transition-all
-                    ${activeStatus === filter
-                      ? "bg-[#1ebc8b] text-gray-900"
-                      : "bg-[#222] text-gray-300 hover:bg-[#333]"
+                    ${
+                      activeStatus === filter
+                        ? "bg-[#1ebc8b] text-gray-900"
+                        : "bg-[#222] text-gray-300 hover:bg-[#333]"
                     }`}
                 >
                   {filter}
@@ -250,9 +284,10 @@ const DoctorTable = () => {
                   key={filter}
                   onClick={() => setActiveTime(filter)}
                   className={`px-3 py-1 text-xs font-medium rounded-full transition-all
-                    ${activeTime === filter
-                      ? "bg-[#1ebc8b] text-gray-900"
-                      : "bg-[#222] text-gray-300 hover:bg-[#333]"
+                    ${
+                      activeTime === filter
+                        ? "bg-[#1ebc8b] text-gray-900"
+                        : "bg-[#222] text-gray-300 hover:bg-[#333]"
                     }`}
                 >
                   {filter}
@@ -320,10 +355,11 @@ const DoctorTable = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
-                          className={`px-2 py-1 text-xs rounded-full ${appt.mode === "Online"
+                          className={`px-2 py-1 text-xs rounded-full ${
+                            appt.mode === "Online"
                               ? "bg-blue-900/50 text-blue-300"
                               : "bg-purple-900/50 text-purple-300"
-                            }`}
+                          }`}
                         >
                           {appt.mode}
                         </span>
@@ -394,10 +430,11 @@ const DoctorTable = () => {
                     <div>
                       <p className="text-gray-400">Mode</p>
                       <span
-                        className={`text-xs px-2 py-1 rounded-full ${appt.mode === "Online"
+                        className={`text-xs px-2 py-1 rounded-full ${
+                          appt.mode === "Online"
                             ? "bg-blue-900/50 text-blue-300"
                             : "bg-purple-900/50 text-purple-300"
-                          }`}
+                        }`}
                       >
                         {appt.mode}
                       </span>
@@ -500,7 +537,9 @@ const DoctorTable = () => {
             </label>
             <select
               value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value as Appointment["status"])}
+              onChange={(e) =>
+                setSelectedStatus(e.target.value as Appointment["status"])
+              }
               className="w-full bg-[#333] border border-[#1ebc8b]/40 text-white rounded-md px-3 py-1.5 text-sm sm:text-base transition focus:outline-none focus:ring-2 focus:ring-[#1ebc8b]"
               disabled={isSaving}
             >

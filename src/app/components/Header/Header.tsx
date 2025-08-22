@@ -83,41 +83,50 @@ const Header = () => {
 
         {/* Desktop Auth */}
         <div className="hidden md:flex items-center space-x-4">
-          {user ? (
-            <>
-              <button
-                onClick={goToProfile}
-                className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5.121 17.804A8.962 8.962 0 0112 15c2.21 0 4.21.804 5.879 2.121M15 10a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-              </button>
-              <CustomButton
-                text="Logout"
-                variant="outlined"
-                onClick={handleLogout}
-              />
-            </>
-          ) : (
-            <CustomButton
-              text="Login"
-              variant="contained"
-              onClick={() => router.push("/Login")}
+  {user ? (
+    <>
+      <button
+        onClick={goToProfile}
+        className="w-8 h-8 h-8 rounded-full overflow-hidden bg-gray-700 flex items-center justify-center"
+      >
+        {user.profilePhoto ? (
+          <img
+            src={user.profilePhoto}
+            alt="Profile"
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 text-white"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5.121 17.804A8.962 8.962 0 0112 15c2.21 0 4.21.804 5.879 2.121M15 10a3 3 0 11-6 0 3 3 0 016 0z"
             />
-          )}
-        </div>
+          </svg>
+        )}
+      </button>
+      <CustomButton
+        text="Logout"
+        variant="outlined"
+        onClick={handleLogout}
+      />
+    </>
+  ) : (
+    <CustomButton
+      text="Login"
+      variant="contained"
+      onClick={() => router.push("/Login")}
+    />
+  )}
+</div>
+
 
         {/* Mobile Section */}
         <div className="md:hidden flex items-center gap-3 z-50">

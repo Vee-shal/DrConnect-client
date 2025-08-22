@@ -3,41 +3,52 @@
 import { _makePostRequest } from "@/app/lib/api/api";
 import { endpoints } from "@/app/lib/api/endpoints";
 import React, { useState } from "react";
+import { toast } from "react-hot-toast";
 
-const AppointmentFormComponent = ({
-  patientId,
-  doctorId,
-}: {
+
+interface AppointmentFormProps {
   patientId: number | any;
   doctorId: number;
-}) => {
+  onClose?: () => void; 
+}
+
+const AppointmentFormComponent = ({ patientId, doctorId, onClose }: AppointmentFormProps) => {
   const [reason, setReason] = useState("");
   const [mode, setMode] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Validation
+
     if (!mode) {
-      alert("Please select consultation mode");
+      toast.error("Please select consultation mode");
       return;
     }
     if (!reason.trim()) {
-      alert("Please enter reason for appointment");
+      toast.error("Please enter reason for appointment");
       return;
     }
 
-    const res = _makePostRequest(endpoints.APPOINTMENT.REQUEST, {
-      patientId,
-      doctorId,
-      reason,
-      mode,
-    });
-    console.log("ressss", res);
-    console.log({ reason, mode });
+    setLoading(true);
+    try {
+      const res = await _makePostRequest(endpoints.APPOINTMENT.REQUEST, {
+        patientId,
+        doctorId,
+        reason,
+        mode,
+      });
 
-    alert("Appointment request sent!");
-    setReason("");
-    setMode("");
+      toast.success("Appointment request sent!");
+      setReason("");
+      setMode("");
+
+      if (onClose) onClose(); // close modal after success
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to send appointment request. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

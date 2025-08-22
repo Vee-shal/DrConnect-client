@@ -44,11 +44,12 @@ const DoctorCard = ({
       <div className="bg-[#111111] p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-[#1ebc8b]/10 text-white flex flex-col justify-between h-full">
         <div>
           <div className="relative overflow-hidden rounded-md mb-4 group">
-            <img
-              src={imageUrl || "/Assets/banner2.webp"}
-              alt={name}
-              className="w-full h-48 object-cover rounded-md transition-transform duration-500 group-hover:scale-105"
-            />
+          <img
+  src={user?.profilePhoto || "/Assets/banner2.webp"} // user.profilePhoto is the uploaded image
+  alt={user?.name || "User"}
+  className="w-full h-48 object-cover rounded-md transition-transform duration-500 group-hover:scale-105"
+/>
+
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
               <span className="text-white font-medium">{specialization}</span>
             </div>
@@ -216,8 +217,11 @@ const DoctorCard = ({
             >
               ×
             </button>
-            <AppointmentFormComponent patientId={user?.id} doctorId={userId}/>
-          </div>
+<AppointmentFormComponent 
+  patientId={user?.id} 
+  doctorId={userId} 
+  onClose={closeModal} 
+/>            </div>
         </div>
       )}
     </>
